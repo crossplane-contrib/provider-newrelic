@@ -1,0 +1,321 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.6.2
+  creationTimestamp: null
+  name: nrqlalertconditions.nrqlalertcondition.provider-newrelic.crossplane.io
+spec:
+  group: nrqlalertcondition.provider-newrelic.crossplane.io
+  names:
+    categories:
+    - crossplane
+    - managed
+    - newrelic
+    kind: NrqlAlertCondition
+    listKind: NrqlAlertConditionList
+    plural: nrqlalertconditions
+    singular: nrqlalertcondition
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.atProvider.id
+      name: ID
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Ready')].status
+      name: READY
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Synced')].status
+      name: SYNCED
+      type: string
+    - jsonPath: .metadata.creationTimestamp
+      name: AGE
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: A NrqlAlertCondition is an example API type.
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: A NrqlAlertConditionSpec defines the desired state of a Condition.
+            properties:
+              deletionPolicy:
+                default: Delete
+                description: DeletionPolicy specifies what will happen to the underlying
+                  external when this managed resource is deleted - either "Delete"
+                  or "Orphan" the external resource.
+                enum:
+                - Orphan
+                - Delete
+                type: string
+              forProvider:
+                description: NrqlAlertConditionParameters are the configurable fields
+                  of a Condition
+                properties:
+                  alertsPolicyRef:
+                    description: AlertPolicyRef is a reference to an AlertPolicy used
+                      to set the PolicyID.
+                    properties:
+                      name:
+                        description: Name of the referenced object.
+                        type: string
+                    required:
+                    - name
+                    type: object
+                  alertsPolicySelector:
+                    description: AlertPolicySelector selects references to an AlertPolicy
+                      used to set the AlertPolicyID.
+                    properties:
+                      matchControllerRef:
+                        description: MatchControllerRef ensures an object with the
+                          same controller reference as the selecting object is selected.
+                        type: boolean
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: MatchLabels ensures an object with matching labels
+                          is selected.
+                        type: object
+                    type: object
+                  baselineDirection:
+                    enum:
+                    - LOWER_ONLY
+                    - UPPER_AND_LOWER
+                    - UPPER_ONLY
+                    type: string
+                  description:
+                    type: string
+                  enabled:
+                    type: boolean
+                  expiration:
+                    description: Expiration are the configurable fields of a Condition
+                    properties:
+                      closeViolationsOnExpiration:
+                        type: boolean
+                      expirationDuration:
+                        type: integer
+                      openViolationOnExpiration:
+                        type: boolean
+                    required:
+                    - closeViolationsOnExpiration
+                    - openViolationOnExpiration
+                    type: object
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  nrql:
+                    description: Nrql are the configurable fields of a Condition
+                    properties:
+                      query:
+                        type: string
+                    required:
+                    - query
+                    type: object
+                  policyId:
+                    description: Below are referenced items
+                    type: string
+                  runbookUrl:
+                    type: string
+                  signal:
+                    description: Signal are the configurable fields of a Condition
+                    properties:
+                      aggregationDelay:
+                        type: integer
+                      aggregationMethod:
+                        enum:
+                        - CADENCE
+                        - EVENT_FLOW
+                        - EVENT_TIMER
+                        type: string
+                      aggregationTimer:
+                        type: integer
+                      aggregationWindow:
+                        minimum: 60
+                        multipleOf: 60
+                        type: integer
+                      fillOption:
+                        enum:
+                        - LAST_VALUE
+                        - NONE
+                        - STATIC
+                        type: string
+                      fillValue:
+                        type: string
+                    required:
+                    - fillOption
+                    type: object
+                  terms:
+                    items:
+                      description: NrqlConditionTerm are the configurable fields of
+                        a Condition
+                      properties:
+                        operator:
+                          enum:
+                          - ABOVE
+                          - BELOW
+                          - EQUALS
+                          type: string
+                        priority:
+                          enum:
+                          - CRITICAL
+                          - WARNING
+                          type: string
+                        threshold:
+                          type: string
+                        thresholdDuration:
+                          maximum: 7200
+                          minimum: 60
+                          multipleOf: 60
+                          type: integer
+                        thresholdOccurrences:
+                          enum:
+                          - ALL
+                          - AT_LEAST_ONCE
+                          type: string
+                      required:
+                      - threshold
+                      type: object
+                    maxItems: 2
+                    type: array
+                  type:
+                    enum:
+                    - STATIC
+                    - BASELINE
+                    - OUTLIER
+                    type: string
+                  valueFunction:
+                    enum:
+                    - SINGLE_VALUE
+                    - SUM
+                    type: string
+                  violationTimeLimitSeconds:
+                    maximum: 2592000
+                    minimum: 300
+                    type: integer
+                required:
+                - enabled
+                - name
+                - nrql
+                - signal
+                - terms
+                type: object
+              providerConfigRef:
+                default:
+                  name: default
+                description: ProviderConfigReference specifies how the provider that
+                  will be used to create, observe, update, and delete this managed
+                  resource should be configured.
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - name
+                type: object
+              providerRef:
+                description: 'ProviderReference specifies the provider that will be
+                  used to create, observe, update, and delete this managed resource.
+                  Deprecated: Please use ProviderConfigReference, i.e. `providerConfigRef`'
+                properties:
+                  name:
+                    description: Name of the referenced object.
+                    type: string
+                required:
+                - name
+                type: object
+              writeConnectionSecretToRef:
+                description: WriteConnectionSecretToReference specifies the namespace
+                  and name of a Secret to which any connection details for this managed
+                  resource should be written. Connection details frequently include
+                  the endpoint, username, and password required to connect to the
+                  managed resource.
+                properties:
+                  name:
+                    description: Name of the secret.
+                    type: string
+                  namespace:
+                    description: Namespace of the secret.
+                    type: string
+                required:
+                - name
+                - namespace
+                type: object
+            required:
+            - forProvider
+            type: object
+          status:
+            description: A NrqlAlertConditionStatus represents the observed state
+              of a Condition.
+            properties:
+              atProvider:
+                description: NrqlAlertConditionObservation are the observable fields
+                  of a Condition.
+                properties:
+                  id:
+                    description: The stable and unique string id from NewRelic.
+                    type: string
+                  observableField:
+                    type: string
+                type: object
+              conditions:
+                description: Conditions of the resource.
+                items:
+                  description: A Condition that may apply to a resource.
+                  properties:
+                    lastTransitionTime:
+                      description: LastTransitionTime is the last time this condition
+                        transitioned from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: A Message containing details about this condition's
+                        last transition from one status to another, if any.
+                      type: string
+                    reason:
+                      description: A Reason for this condition's last transition from
+                        one status to another.
+                      type: string
+                    status:
+                      description: Status of this condition; is it currently True,
+                        False, or Unknown?
+                      type: string
+                    type:
+                      description: Type of this condition. At most one of each condition
+                        type may apply to a resource at any point in time.
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

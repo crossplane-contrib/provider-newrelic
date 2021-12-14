@@ -1,0 +1,11 @@
+apiVersion: alertspolicy.provider-newrelic.crossplane.io/v1alpha1
+kind: AlertsPolicy
+metadata:
+  name: example-alertspolicy
+spec:
+  forProvider:
+    name: "AlertsPolicy Name"
+    incidentPreference: PER_POLICY | PER_CONDITION | PER_CONDITION_AND_TARGET
+    channelIds: []
+  providerConfigRef:
+    name: example
