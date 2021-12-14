@@ -1,0 +1,33 @@
+apiVersion: nrqlalertcondition.provider-newrelic.crossplane.io/v1alpha1
+kind: NrqlAlertCondition
+metadata:
+  name: example-nrqlalertcondition
+spec:
+  forProvider:
+    alertsPolicyRef:
+      name: example-alertspolicy
+    enabled: true
+    expiration:
+      closeViolationsOnExpiration: false
+      expirationDuration: 600
+      openViolationOnExpiration: false
+    name: "NrqlAlertCondition Name"
+    nrql:
+      query: "SELECT * FROM Metric WHERE some-condition"
+      evaluationOffset: 3
+    runbookUrl: ""
+    signal:
+      aggregationWindow: 60
+      evaluationOffset: 3
+      fillOption: "NONE"
+    terms:
+      - thresholdDuration: 60
+        operator: "ABOVE"
+        priority: "CRITICAL"
+        thresholdOccurrences: "ALL"
+        threshold: "1"
+    type: "STATIC"
+    violationTimeLimitSeconds: 2592000
+    valueFunction: "SINGLE_VALUE"
+  providerConfigRef:
+    name: example
