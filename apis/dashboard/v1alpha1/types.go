@@ -212,6 +212,18 @@ type Dashboard struct {
 	Status DashboardStatus `json:"status,omitempty"`
 }
 
+// SetPublishConnectionDetailsTo is a func for connection details
+func (in *Dashboard) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
+	// TODO implement me
+	panic("implement me")
+}
+
+// GetPublishConnectionDetailsTo is a func for connection details
+func (in *Dashboard) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	// TODO implement me
+	panic("implement me")
+}
+
 // +kubebuilder:object:root=true
 
 // DashboardList contains a list of Policy
