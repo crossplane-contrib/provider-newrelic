@@ -69,6 +69,18 @@ type AlertsPolicy struct {
 	Status AlertsPolicyStatus `json:"status,omitempty"`
 }
 
+// SetPublishConnectionDetailsTo is a func for connection details
+func (in *AlertsPolicy) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
+	// TODO implement me
+	panic("implement me")
+}
+
+// GetPublishConnectionDetailsTo is a func for connection details
+func (in *AlertsPolicy) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	// TODO implement me
+	panic("implement me")
+}
+
 // +kubebuilder:object:root=true
 
 // AlertsPolicyList contains a list of Policy

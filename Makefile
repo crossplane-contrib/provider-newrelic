@@ -109,7 +109,7 @@ run: go.build
 	@# To see other arguments that can be provided, run the command with --help instead
 	$(GO_OUT_DIR)/provider --debug
 
-.PHONY: cobertura reviewable manifests submodules fallthrough test-integration run crds.clean
+.PHONY: cobertura manifests submodules fallthrough test-integration run crds.clean
 
 # ====================================================================================
 # Special Targets

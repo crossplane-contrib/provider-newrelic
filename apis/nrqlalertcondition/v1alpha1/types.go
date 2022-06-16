@@ -138,6 +138,18 @@ type NrqlAlertCondition struct {
 	Status NrqlAlertConditionStatus `json:"status,omitempty"`
 }
 
+// SetPublishConnectionDetailsTo is a func for connection details
+func (in *NrqlAlertCondition) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
+	// TODO implement me
+	panic("implement me")
+}
+
+// GetPublishConnectionDetailsTo is a func for connection details
+func (in *NrqlAlertCondition) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	// TODO implement me
+	panic("implement me")
+}
+
 // +kubebuilder:object:root=true
 
 // NrqlAlertConditionList contains a list of Condition
