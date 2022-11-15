@@ -49,7 +49,7 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 								},
 							},
 							{ID: pointy.String("test_dashboard_widget_2"),
@@ -61,7 +61,7 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -78,7 +78,7 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -114,7 +114,7 @@ func DashboardBillboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 									Thresholds: []v1alpha1.DashboardBillboardWidgetThresholdInput{{AlertSeverity: pointy.String("Warning"), Value: pointy.Float64(50)},
 										{AlertSeverity: pointy.String("Critical"), Value: pointy.Float64(90)},
 									},

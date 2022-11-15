@@ -108,6 +108,7 @@ type DashboardWidgetRawConfiguration struct {
 	Thresholds []DashboardBillboardWidgetThresholdInput `json:"thresholds,omitempty"`
 }
 
+// DashboardBillboardWidgetThresholdInput - used by Billboard Widgets
 type DashboardBillboardWidgetThresholdInput struct {
 	// alert severity.
 	// +kubebuilder:validation:Enum=CRITICAL;NOT_ALERTING;WARNING
