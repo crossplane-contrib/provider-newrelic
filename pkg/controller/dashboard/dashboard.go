@@ -492,10 +492,9 @@ func GenerateDashboardWidgetRawConfigurationInput(cr *v1alpha1.DashboardWidgetRa
 		return input, errMarshal
 	}
 	// Convert our object to json and then use the method on the entity
-	input.UnmarshalJSON(out)
-	err := input.UnmarshalJSON(out)
+	errUnmarshalJSON := input.UnmarshalJSON(out)
 
-	return input, err
+	return input, errUnmarshalJSON
 }
 
 // GenerateDashboardWidgetLayoutInput generates an input object

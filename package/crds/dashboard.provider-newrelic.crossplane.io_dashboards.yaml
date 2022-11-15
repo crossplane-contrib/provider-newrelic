@@ -156,6 +156,8 @@ spec:
                                   thresholds:
                                     description: Used by viz.billboard
                                     items:
+                                      description: DashboardBillboardWidgetThresholdInput
+                                        - used by Billboard Widgets
                                       properties:
                                         alertSeverity:
                                           description: alert severity.
