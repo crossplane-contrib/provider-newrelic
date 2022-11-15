@@ -178,7 +178,7 @@ func (in *NrqlAlertConditionParameters) DeepCopyInto(out *NrqlAlertConditionPara
 	if in.AlertsPolicyRef != nil {
 		in, out := &in.AlertsPolicyRef, &out.AlertsPolicyRef
 		*out = new(v1.Reference)
-		**out = **in
+		(*in).DeepCopyInto(*out)
 	}
 	if in.AlertsPolicySelector != nil {
 		in, out := &in.AlertsPolicySelector, &out.AlertsPolicySelector

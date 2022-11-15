@@ -3,10 +3,10 @@ module github.com/crossplane-contrib/provider-newrelic
 go 1.18
 
 require (
-	github.com/crossplane/crossplane-runtime v0.15.1-0.20220315141414-988c9ba9c255
+	github.com/crossplane/crossplane-runtime v0.19.0-rc.0.0.20220930073209-84e629b95898
 	github.com/crossplane/crossplane-tools v0.0.0-20220310165030-1f43fc12793e
-	github.com/google/go-cmp v0.5.7
-	github.com/newrelic/newrelic-client-go v0.86.1
+	github.com/google/go-cmp v0.5.8
+	github.com/newrelic/newrelic-client-go/v2 v2.3.0
 	github.com/openlyinc/pointy v1.1.2
 	github.com/pkg/errors v0.9.1
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6

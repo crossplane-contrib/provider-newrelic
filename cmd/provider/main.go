@@ -40,8 +40,8 @@ func main() {
 		app              = kingpin.New(filepath.Base(os.Args[0]), "NewRelic support for Crossplane.").DefaultEnvars()
 		debug            = app.Flag("debug", "Run with debug logging.").Short('d').Bool()
 		syncInterval     = app.Flag("sync", "Sync interval controls how often all resources will be double checked for drift.").Short('s').Default("1h").Duration()
-		pollInterval     = app.Flag("poll", "Poll interval controls how often an individual resource should be checked for drift.").Default("1m").Duration()
-		leaderElection   = app.Flag("leader-election", "Use leader election for the controller manager.").Short('l').Default("false").Envar("LEADER_ELECTION").Bool()
+		pollInterval     = app.Flag("poll", "Poll interval controls how often an individual resource should be checked for drift.").Default("30m").Duration()
+		leaderElection   = app.Flag("leader-election", "Use leader election for the conroller manager.").Short('l').Default("false").OverrideDefaultFromEnvar("LEADER_ELECTION").Bool()
 		maxReconcileRate = app.Flag("max-reconcile-rate", "The global maximum rate per second at which resources may checked for drift from the desired state.").Default("10").Int()
 	)
 
@@ -88,7 +88,7 @@ func main() {
 		Features:                &feature.Flags{},
 	}
 
-	kingpin.FatalIfError(controller.Setup(mgr, o), "Cannot setup new relic controllers")
+	kingpin.FatalIfError(controller.Setup(mgr, o), "Cannot setup NewRelic controllers")
 	kingpin.FatalIfError(mgr.Start(ctrl.SetupSignalHandler()), "Cannot start controller manager")
 
 }

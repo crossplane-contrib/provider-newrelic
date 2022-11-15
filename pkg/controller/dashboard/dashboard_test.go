@@ -21,8 +21,8 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/google/go-cmp/cmp"
-	"github.com/newrelic/newrelic-client-go/pkg/dashboards"
-	"github.com/newrelic/newrelic-client-go/pkg/entities"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/dashboards"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/entities"
 	"github.com/openlyinc/pointy"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/dashboard/v1alpha1"
@@ -48,8 +48,8 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Area: &v1alpha1.DashboardAreaWidgetConfiguration{NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
 								},
 							},
 							{ID: pointy.String("test_dashboard_widget_2"),
@@ -60,8 +60,8 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Area: &v1alpha1.DashboardAreaWidgetConfiguration{NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -77,8 +77,8 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Area: &v1alpha1.DashboardAreaWidgetConfiguration{NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -113,11 +113,10 @@ func DashboardBillboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Billboard: &v1alpha1.DashboardBillboardWidgetConfiguration{
-										NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}},
-										Thresholds: []v1alpha1.DashboardBillboardWidgetThreshold{{AlertSeverity: "Warning", Value: "50"},
-											{AlertSeverity: "Critical", Value: "90"}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: []v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}},
+									Thresholds: []v1alpha1.DashboardBillboardWidgetThresholdInput{{AlertSeverity: pointy.String("Warning"), Value: pointy.Float64(50)},
+										{AlertSeverity: pointy.String("Critical"), Value: pointy.Float64(90)},
 									},
 								},
 							},
