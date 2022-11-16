@@ -1,0 +1,71 @@
+apiVersion: dashboard.provider-newrelic.crossplane.io/v1alpha1
+kind: Dashboard
+metadata:
+  name: newrelic-karpenter-capacity-dashboard
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    description: ""
+    name: Karpenter Capacity
+    pages:
+      - description: ""
+        name: Karpenter Capacity
+        widgets:
+          - layout:
+              column: 1
+              height: 3
+              row: 1
+              width: 12
+            rawConfiguration:
+              nrqlQueries:
+                - accountId: "1111111"
+                  query: SELECT (average(karpenter_consolidation_actions_performed) * cardinality(karpenter_consolidation_actions_performed))
+                    FROM Metric SINCE 60 MINUTES AGO UNTIL NOW FACET tuple(cluster, action)
+                    LIMIT 100 TIMESERIES 30000
+            title: Consolidation Actions Performed
+            visualization:
+              id: viz.line
+          - layout:
+              column: 1
+              height: 6
+              row: 4
+              width: 6
+            rawConfiguration:
+              nrqlQueries:
+                - accountId: "1111111"
+                  query: SELECT ((cardinality(conditional(WHERE (capacity_type = 'spot'),
+                    karpenter_nodes_allocatable)) OR 0) / cardinality(karpenter_nodes_allocatable))
+                    FROM Metric SINCE 60 MINUTES AGO UNTIL NOW TIMESERIES 30000
+            title: Spot Node Percentage
+            visualization:
+              id: viz.line
+          - layout:
+              column: 1
+              height: 6
+              row: 10
+              width: 12
+            rawConfiguration:
+              nrqlQueries:
+                - accountId: "1111111"
+                  query: SELECT (((latest(conditional(WHERE (resource_type = 'cpu'), karpenter_nodes_total_daemon_requests))
+                    OR (latest(karpenter_nodes_allocatable) * 0)) + (latest(conditional(WHERE
+                    (resource_type = 'cpu'), karpenter_nodes_total_pod_requests)) OR (latest(karpenter_nodes_allocatable)
+                    * 0))) / latest(conditional(WHERE (resource_type = 'cpu'), karpenter_nodes_allocatable)))
+                    FROM Metric SINCE 60 MINUTES AGO UNTIL NOW LIMIT 100 TIMESERIES 30000
+                - accountId: "1111111"
+                  query: SELECT (((latest(conditional(WHERE (resource_type = 'memory'),
+                    karpenter_nodes_total_daemon_requests)) OR (latest(karpenter_nodes_allocatable)
+                    * 0)) + (latest(conditional(WHERE (resource_type = 'memory'), karpenter_nodes_total_pod_requests))
+                    OR (latest(karpenter_nodes_allocatable) * 0))) / latest(conditional(WHERE
+                    (resource_type = 'memory'), karpenter_nodes_allocatable))) FROM Metric
+                    SINCE 60 MINUTES AGO UNTIL NOW LIMIT 100 TIMESERIES 30000
+                - accountId: "1111111"
+                  query: SELECT (latest(karpenter_nodes_total_daemon_requests) + latest(karpenter_nodes_total_pod_requests))
+                    FROM Metric WHERE (resource_type = 'pods') SINCE 60 MINUTES AGO UNTIL
+                    NOW LIMIT 100 TIMESERIES 30000
+            title: Node Summary
+            visualization:
+              id: viz.line
+    permissions: PUBLIC_READ_WRITE
+  providerConfigRef:
+    name: newrelic-provider

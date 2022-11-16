@@ -55,66 +55,18 @@ type DashboardPage struct {
 	Widgets []DashboardWidget `json:"widgets,omitempty"`
 }
 
-// DashboardWidgetConfiguration - Typed configuration for known visualizations. Only one (at most) will be populated for a given widget.
-type DashboardWidgetConfiguration struct {
-	// Configuration for visualization type 'viz.area'
-	Area *DashboardAreaWidgetConfiguration `json:"area,omitempty"`
-	// Configuration for visualization type 'viz.bar'
-	Bar *DashboardBarWidgetConfiguration `json:"bar,omitempty"`
-	// Configuration for visualization type 'viz.billboard'
-	Billboard *DashboardBillboardWidgetConfiguration `json:"billboard,omitempty"`
-	// Configuration for visualization type 'viz.line'
-	Line *DashboardLineWidgetConfiguration `json:"line,omitempty"`
-	// Configuration for visualization type 'viz.markdown'
-	// +optional
-	Markdown DashboardMarkdownWidgetConfiguration `json:"markdown"`
-	// Configuration for visualization type 'viz.pie'
-	Pie *DashboardPieWidgetConfiguration `json:"pie,omitempty"`
-	// Configuration for visualization type 'viz.table'
-	Table *DashboardTableWidgetConfiguration `json:"table,omitempty"`
-}
-
 // DashboardWidget - Widgets in a Dashboard Page.
 type DashboardWidget struct {
-	// Typed configuration
-	Configuration DashboardWidgetConfiguration `json:"configuration,omitempty"`
 	// id
 	ID *string `json:"id,omitempty"`
 	// layout
 	Layout DashboardWidgetLayout `json:"layout,omitempty"`
-
 	// Untyped configuration
-	RawConfiguration *string `json:"rawConfiguration,omitempty"`
+	RawConfiguration *DashboardWidgetRawConfiguration `json:"rawConfiguration,omitempty"`
 	// title
 	Title string `json:"title,omitempty"`
 	// Specifies how this widget will be visualized.
 	Visualization DashboardWidgetVisualization `json:"visualization"`
-}
-
-// DashboardPieWidgetConfiguration - Configuration for visualization type 'viz.pie'
-type DashboardPieWidgetConfiguration struct {
-	// nrql queries
-	NRQLQueries []DashboardWidgetNRQLQuery `json:"nrqlQueries,omitempty"`
-}
-
-// DashboardTableWidgetConfiguration - Configuration for visualization type 'viz.table'
-type DashboardTableWidgetConfiguration struct {
-	// nrql queries
-	NRQLQueries []DashboardWidgetNRQLQuery `json:"nrqlQueries,omitempty"`
-}
-
-// DashboardMarkdownWidgetConfiguration - Configuration for visualization type 'viz.markdown'
-type DashboardMarkdownWidgetConfiguration struct {
-	// Markdown content of the widget
-	// +kubebuilder:default:=""
-	// +nullable
-	Text *string `json:"text"`
-}
-
-// DashboardLineWidgetConfiguration - Configuration for visualization type 'viz.line'
-type DashboardLineWidgetConfiguration struct {
-	// nrql queries
-	NRQLQueries []DashboardWidgetNRQLQuery `json:"nrqlQueries,omitempty"`
 }
 
 // DashboardWidgetVisualization - Visualization configuration
@@ -140,40 +92,42 @@ type DashboardWidgetLayout struct {
 	Width int `json:"width,omitempty"`
 }
 
-// DashboardAreaWidgetConfiguration - Configuration for visualization type 'viz.area'
-type DashboardAreaWidgetConfiguration struct {
-	// nrql queries
-	NRQLQueries []DashboardWidgetNRQLQuery `json:"nrqlQueries,omitempty"`
+// DashboardWidgetRawConfiguration represents the configuration for widgets, it's a replacement for configuration field
+type DashboardWidgetRawConfiguration struct {
+	// Used by all widgets
+	NRQLQueries     *[]DashboardWidgetNRQLQueryInput `json:"nrqlQueries,omitempty"`
+	PlatformOptions *RawConfigurationPlatformOptions `json:"platformOptions,omitempty"`
+
+	// Used by viz.bullet
+	Limit *float64 `json:"limit,omitempty"`
+
+	// Used by viz.markdown
+	Text *string `json:"text,omitempty"`
+
+	// Used by viz.billboard
+	Thresholds []DashboardBillboardWidgetThresholdInput `json:"thresholds,omitempty"`
 }
 
-// DashboardWidgetNRQLQuery - Single NRQL query for a widget.
-type DashboardWidgetNRQLQuery struct {
+// DashboardBillboardWidgetThresholdInput - used by Billboard Widgets
+type DashboardBillboardWidgetThresholdInput struct {
+	// alert severity.
+	// +kubebuilder:validation:Enum=CRITICAL;NOT_ALERTING;WARNING
+	AlertSeverity *string `json:"alertSeverity,omitempty"`
+	// value.
+	Value *float64 `json:"value,omitempty"`
+}
+
+// DashboardWidgetNRQLQueryInput - NRQL query used by a widget
+type DashboardWidgetNRQLQueryInput struct {
 	// accountId
-	AccountID int `json:"accountId"`
+	AccountID string `json:"accountId"`
 	// NRQL formatted query
 	Query string `json:"query"`
 }
 
-// DashboardBarWidgetConfiguration - Configuration for visualization type 'viz.bar'
-type DashboardBarWidgetConfiguration struct {
-	// nrql queries
-	NRQLQueries []DashboardWidgetNRQLQuery `json:"nrqlQueries,omitempty"`
-}
-
-// DashboardBillboardWidgetConfiguration - Configuration for visualization type 'viz.billboard'
-type DashboardBillboardWidgetConfiguration struct {
-	// nrql queries
-	NRQLQueries []DashboardWidgetNRQLQuery `json:"nrqlQueries,omitempty"`
-	// Thresholds
-	Thresholds []DashboardBillboardWidgetThreshold `json:"thresholds,omitempty"`
-}
-
-// DashboardBillboardWidgetThreshold - Billboard widget threshold.
-type DashboardBillboardWidgetThreshold struct {
-	// Alert severity.
-	AlertSeverity string `json:"alertSeverity,omitempty"`
-	// Alert value.
-	Value string `json:"value,omitempty"`
+// RawConfigurationPlatformOptions represents the platform widget options
+type RawConfigurationPlatformOptions struct {
+	IgnoreTimeRange bool `json:"ignoreTimeRange,omitempty"`
 }
 
 // DashboardObservation are the observable fields of a Policy.
@@ -210,6 +164,18 @@ type Dashboard struct {
 
 	Spec   DashboardSpec   `json:"spec"`
 	Status DashboardStatus `json:"status,omitempty"`
+}
+
+// SetPublishConnectionDetailsTo is a func for connection details
+func (in *Dashboard) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
+	// TODO implement me
+	panic("implement me")
+}
+
+// GetPublishConnectionDetailsTo is a func for connection details
+func (in *Dashboard) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	// TODO implement me
+	panic("implement me")
 }
 
 // +kubebuilder:object:root=true

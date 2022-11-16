@@ -21,8 +21,8 @@ import (
 
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/google/go-cmp/cmp"
-	"github.com/newrelic/newrelic-client-go/pkg/dashboards"
-	"github.com/newrelic/newrelic-client-go/pkg/entities"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/dashboards"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/entities"
 	"github.com/openlyinc/pointy"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/dashboard/v1alpha1"
@@ -48,8 +48,8 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Area: &v1alpha1.DashboardAreaWidgetConfiguration{NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 								},
 							},
 							{ID: pointy.String("test_dashboard_widget_2"),
@@ -60,8 +60,8 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Area: &v1alpha1.DashboardAreaWidgetConfiguration{NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -77,8 +77,8 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Area: &v1alpha1.DashboardAreaWidgetConfiguration{NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -113,11 +113,10 @@ func DashboardBillboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 									Width:  1,
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: v1alpha1.DashboardWidgetConfiguration{
-									Billboard: &v1alpha1.DashboardBillboardWidgetConfiguration{
-										NRQLQueries: []v1alpha1.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}},
-										Thresholds: []v1alpha1.DashboardBillboardWidgetThreshold{{AlertSeverity: "Warning", Value: "50"},
-											{AlertSeverity: "Critical", Value: "90"}},
+								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
+									Thresholds: []v1alpha1.DashboardBillboardWidgetThresholdInput{{AlertSeverity: pointy.String("Warning"), Value: pointy.Float64(50)},
+										{AlertSeverity: pointy.String("Critical"), Value: pointy.Float64(90)},
 									},
 								},
 							},
@@ -469,10 +468,8 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Row:    1,
 								Width:  1,
 							},
-							Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
-							Configuration: entities.DashboardWidgetConfiguration{
-								Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
-							},
+							Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 						{ID: "test_dashboard_widget_1",
 							Title: "dashboard_title_1", Layout: entities.DashboardWidgetLayout{
@@ -481,10 +478,8 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Row:    1,
 								Width:  1,
 							},
-							Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
-							Configuration: entities.DashboardWidgetConfiguration{
-								Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
-							},
+							Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 					},
 				},
@@ -500,10 +495,8 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 									Row:    1,
 									Width:  1,
 								},
-								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
-								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
-								},
+								Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
+								RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 							},
 						},
 					}},
@@ -525,11 +518,8 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Row:    1,
 								Width:  1,
 							},
-							Visualization: dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
-							Configuration: dashboards.DashboardWidgetConfigurationInput{
-								Area:     &dashboards.DashboardAreaWidgetConfigurationInput{NRQLQueries: []dashboards.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}}},
-								Markdown: &dashboards.DashboardMarkdownWidgetConfigurationInput{},
-							},
+							Visualization:    dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 						{ID: "test_dashboard_widget_2",
 							Title: "dashboard_title_2", Layout: dashboards.DashboardWidgetLayoutInput{
@@ -538,11 +528,8 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Row:    1,
 								Width:  1,
 							},
-							Visualization: dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
-							Configuration: dashboards.DashboardWidgetConfigurationInput{
-								Area:     &dashboards.DashboardAreaWidgetConfigurationInput{NRQLQueries: []dashboards.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}}},
-								Markdown: &dashboards.DashboardMarkdownWidgetConfigurationInput{},
-							},
+							Visualization:    dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 					},
 				},
@@ -558,11 +545,8 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 									Row:    1,
 									Width:  1,
 								},
-								Visualization: dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
-								Configuration: dashboards.DashboardWidgetConfigurationInput{
-									Area:     &dashboards.DashboardAreaWidgetConfigurationInput{NRQLQueries: []dashboards.DashboardWidgetNRQLQueryInput{{AccountID: 1, Query: "Select * FROM Metric"}}},
-									Markdown: &dashboards.DashboardMarkdownWidgetConfigurationInput{},
-								},
+								Visualization:    dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
+								RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 							},
 						},
 					}},

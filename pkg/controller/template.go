@@ -1,5 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
+Copyright 2022 The Crossplane Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,29 +17,29 @@ limitations under the License.
 package controller
 
 import (
-	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
 
-	"github.com/crossplane-contrib/provider-newrelic/internal/controller/alertspolicy"
-	"github.com/crossplane-contrib/provider-newrelic/internal/controller/config"
-	"github.com/crossplane-contrib/provider-newrelic/internal/controller/dashboard"
-	"github.com/crossplane-contrib/provider-newrelic/internal/controller/nrqlalertcondition"
+	"github.com/crossplane-contrib/provider-newrelic/pkg/controller/alertspolicy"
+	"github.com/crossplane-contrib/provider-newrelic/pkg/controller/config"
+	"github.com/crossplane-contrib/provider-newrelic/pkg/controller/dashboard"
+	"github.com/crossplane-contrib/provider-newrelic/pkg/controller/nrqlalertcondition"
 )
 
 // Setup creates all Template controllers with the supplied logger and adds them to
 // the supplied manager.
-func Setup(mgr ctrl.Manager, l logging.Logger, wl workqueue.RateLimiter) error {
-	for _, setup := range []func(ctrl.Manager, logging.Logger, workqueue.RateLimiter) error{
+func Setup(mgr ctrl.Manager, o controller.Options) error {
+	for _, setup := range []func(ctrl.Manager, controller.Options) error{
 		config.Setup,
 		dashboard.Setup,
 		nrqlalertcondition.Setup,
 		alertspolicy.Setup,
 	} {
-		if err := setup(mgr, l, wl); err != nil {
+		if err := setup(mgr, o); err != nil {
 			return err
 		}
 	}
-	return nil
+
+	return config.Setup(mgr, o)
 }

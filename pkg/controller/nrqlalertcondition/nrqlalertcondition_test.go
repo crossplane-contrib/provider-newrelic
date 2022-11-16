@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/newrelic/newrelic-client-go/pkg/alerts"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/alerts"
 	"github.com/openlyinc/pointy"
 
 	"github.com/crossplane/crossplane-runtime/pkg/meta"

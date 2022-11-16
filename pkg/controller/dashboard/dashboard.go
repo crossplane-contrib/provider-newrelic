@@ -18,38 +18,34 @@ package dashboard
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/newrelic/newrelic-client-go/newrelic"
-	"github.com/newrelic/newrelic-client-go/pkg/common"
-	"github.com/newrelic/newrelic-client-go/pkg/dashboards"
-	"github.com/newrelic/newrelic-client-go/pkg/entities"
-	"github.com/newrelic/newrelic-client-go/pkg/nrdb"
+	"github.com/newrelic/newrelic-client-go/v2/newrelic"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/common"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/dashboards"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/entities"
 	"github.com/openlyinc/pointy"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/dashboard/v1alpha1"
 	apisv1alpha1 "github.com/crossplane-contrib/provider-newrelic/apis/v1alpha1"
-	nr "github.com/crossplane-contrib/provider-newrelic/internal/clients"
+	nr "github.com/crossplane-contrib/provider-newrelic/pkg/clients"
 )
 
 const (
@@ -61,14 +57,12 @@ const (
 )
 
 // Setup adds a controller that reconciles a managed resources.
-func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter) error {
+func Setup(mgr ctrl.Manager, o controller.Options) error {
 	name := managed.ControllerName(v1alpha1.DashboardGroupKind)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
-		WithOptions(controller.Options{
-			RateLimiter: ratelimiter.NewController(rl),
-		}).
+		WithOptions(o.ForControllerRuntime()).
 		For(&v1alpha1.Dashboard{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.DashboardGroupVersionKind),
@@ -77,10 +71,10 @@ func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter) error {
 				usage: resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
 			}),
 			managed.WithConnectionPublishers(),
-			managed.WithPollInterval(30*time.Minute),
+			managed.WithPollInterval(o.PollInterval),
 			managed.WithReferenceResolver(managed.NewAPISimpleReferenceResolver(mgr.GetClient())),
 			managed.WithInitializers(),
-			managed.WithLogger(l.WithValues("controller", name)),
+			managed.WithLogger(o.Logger.WithValues("controller", name)),
 			managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name)))))
 }
 
@@ -368,13 +362,9 @@ func GenerateDashboardWidgetInputFromEntity(cd []entities.DashboardWidget) []das
 
 	for _, widget := range cd {
 		widgetInput := dashboards.DashboardWidgetInput{Title: widget.Title, ID: widget.ID}
-		widgetInput.Configuration = GenerateDashboardWidgetConfigurationInputFromEntity(widget.Configuration)
 		widgetInput.Layout = GenerateDashboardWidgetLayoutInputFromEntity(widget.Layout)
 		widgetInput.Visualization = GenerateDashboardWidgetVisualizationInputFromEntity(widget.Visualization)
-		// Some types of visualizations use raw configuration
-		if widget.RawConfiguration != nil {
-			widgetInput.RawConfiguration = widget.RawConfiguration
-		}
+		widgetInput.RawConfiguration = widget.RawConfiguration
 		input = append(input, widgetInput)
 	}
 	sort.Slice(input, func(i, j int) bool {
@@ -390,86 +380,6 @@ func GenerateDashboardWidgetInputFromEntity(cd []entities.DashboardWidget) []das
 		return strings.Join([]string{strconv.Itoa(input[i].Layout.Row), strconv.Itoa(input[i].Layout.Height), strconv.Itoa(input[i].Layout.Width), strconv.Itoa(input[i].Layout.Column)}, "") < strings.Join([]string{strconv.Itoa(input[j].Layout.Row), strconv.Itoa(input[j].Layout.Height), strconv.Itoa(input[j].Layout.Width), strconv.Itoa(input[j].Layout.Column)}, "")
 	})
 
-	return input
-}
-
-// GenerateDashboardWidgetConfigurationInputFromEntity generates an input object
-func GenerateDashboardWidgetConfigurationInputFromEntity(cd entities.DashboardWidgetConfiguration) dashboards.DashboardWidgetConfigurationInput { // nolint:gocyclo
-	input := dashboards.DashboardWidgetConfigurationInput{}
-
-	if cd.Area.NRQLQueries != nil {
-		nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-		for _, q := range cd.Area.NRQLQueries {
-			item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: q.Query}
-			nrqlQueries = append(nrqlQueries, item)
-		}
-		input.Area = &dashboards.DashboardAreaWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-	}
-
-	if cd.Bar.NRQLQueries != nil {
-		nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-		for _, q := range cd.Bar.NRQLQueries {
-			item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: q.Query}
-			nrqlQueries = append(nrqlQueries, item)
-		}
-		input.Bar = &dashboards.DashboardBarWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-	}
-
-	if cd.Billboard.NRQLQueries != nil {
-		nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-		for _, q := range cd.Billboard.NRQLQueries {
-			item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: q.Query}
-			nrqlQueries = append(nrqlQueries, item)
-		}
-
-		thresholds := make([]dashboards.DashboardBillboardWidgetThresholdInput, 0)
-		alertSeverities := make([]string, 0, len(cd.Billboard.Thresholds))
-		for _, threshold := range cd.Billboard.Thresholds {
-			alertSeverities = append(alertSeverities, string(threshold.AlertSeverity))
-		}
-		sort.Strings(alertSeverities)
-		for _, alertSeverity := range alertSeverities {
-			for _, q := range cd.Billboard.Thresholds {
-				if alertSeverity == string(q.AlertSeverity) {
-					item := dashboards.DashboardBillboardWidgetThresholdInput{AlertSeverity: q.AlertSeverity, Value: pointy.Float64(q.Value)}
-					thresholds = append(thresholds, item)
-				}
-			}
-		}
-
-		input.Billboard = &dashboards.DashboardBillboardWidgetConfigurationInput{NRQLQueries: nrqlQueries, Thresholds: thresholds}
-	}
-
-	if cd.Line.NRQLQueries != nil {
-		nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-		for _, q := range cd.Line.NRQLQueries {
-			item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: q.Query}
-			nrqlQueries = append(nrqlQueries, item)
-		}
-		input.Line = &dashboards.DashboardLineWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-	}
-
-	input.Markdown = &dashboards.DashboardMarkdownWidgetConfigurationInput{
-		Text: cd.Markdown.Text,
-	}
-
-	if cd.Pie.NRQLQueries != nil {
-		nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-		for _, q := range cd.Pie.NRQLQueries {
-			item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: q.Query}
-			nrqlQueries = append(nrqlQueries, item)
-		}
-		input.Pie = &dashboards.DashboardPieWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-	}
-
-	if cd.Table.NRQLQueries != nil {
-		nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-		for _, q := range cd.Table.NRQLQueries {
-			item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: q.Query}
-			nrqlQueries = append(nrqlQueries, item)
-		}
-		input.Table = &dashboards.DashboardTableWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-	}
 	return input
 }
 
@@ -548,13 +458,12 @@ func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.Dashbo
 		if ID != "" {
 			widgetInput.ID = ID
 		}
-		widgetInput.Configuration = GenerateDashboardWidgetConfigurationInput(widget.Configuration)
 		widgetInput.Layout = GenerateDashboardWidgetLayoutInput(widget.Layout)
 		widgetInput.Visualization = GenerateDashboardWidgetVisualizationInput(widget.Visualization)
-		// Some types of visualizations use raw configuration
-		if widget.RawConfiguration != nil {
-			widgetInput.RawConfiguration = entities.DashboardWidgetRawConfiguration(pointy.StringValue(widget.RawConfiguration, "{}"))
-		}
+
+		rawConfiguration, _ := GenerateDashboardWidgetRawConfigurationInput(widget.RawConfiguration)
+		widgetInput.RawConfiguration = rawConfiguration
+
 		input = append(input, widgetInput)
 	}
 
@@ -574,98 +483,18 @@ func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.Dashbo
 	return input
 }
 
-// GenerateDashboardWidgetConfigurationInput generates an input object
-func GenerateDashboardWidgetConfigurationInput(cr v1alpha1.DashboardWidgetConfiguration) dashboards.DashboardWidgetConfigurationInput { // nolint:gocyclo
-	input := dashboards.DashboardWidgetConfigurationInput{}
+// GenerateDashboardWidgetRawConfigurationInput generates an input object
+func GenerateDashboardWidgetRawConfigurationInput(cr *v1alpha1.DashboardWidgetRawConfiguration) (entities.DashboardWidgetRawConfiguration, error) { // nolint:gocyclo
+	input := entities.DashboardWidgetRawConfiguration{}
 
-	if cr.Area != nil {
-		if cr.Area.NRQLQueries != nil {
-			nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-			for _, q := range cr.Area.NRQLQueries {
-				item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: nrdb.NRQL(q.Query)}
-				nrqlQueries = append(nrqlQueries, item)
-			}
-			input.Area = &dashboards.DashboardAreaWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-		}
+	out, errMarshal := json.Marshal(cr)
+	if errMarshal != nil {
+		return input, errMarshal
 	}
+	// Convert our object to json and then use the method on the entity
+	errUnmarshalJSON := input.UnmarshalJSON(out)
 
-	if cr.Bar != nil {
-		if cr.Bar.NRQLQueries != nil {
-			nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-			for _, q := range cr.Bar.NRQLQueries {
-				item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: nrdb.NRQL(q.Query)}
-				nrqlQueries = append(nrqlQueries, item)
-			}
-			input.Bar = &dashboards.DashboardBarWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-		}
-	}
-
-	if cr.Billboard != nil {
-		if cr.Billboard.NRQLQueries != nil {
-			nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-			for _, q := range cr.Billboard.NRQLQueries {
-				item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: nrdb.NRQL(q.Query)}
-				nrqlQueries = append(nrqlQueries, item)
-			}
-
-			// Add sorted thresholds
-			thresholds := make([]dashboards.DashboardBillboardWidgetThresholdInput, 0)
-			alertSeverities := make([]string, 0, len(cr.Billboard.Thresholds))
-			for _, threshold := range cr.Billboard.Thresholds {
-				alertSeverities = append(alertSeverities, threshold.AlertSeverity)
-			}
-			sort.Strings(alertSeverities)
-			for _, alertSeverity := range alertSeverities {
-				for _, q := range cr.Billboard.Thresholds {
-					if alertSeverity == q.AlertSeverity {
-						thresholdValue, _ := strconv.ParseFloat(q.Value, 64)
-						item := dashboards.DashboardBillboardWidgetThresholdInput{AlertSeverity: entities.DashboardAlertSeverity(q.AlertSeverity), Value: pointy.Float64(thresholdValue)}
-						thresholds = append(thresholds, item)
-					}
-				}
-			}
-
-			input.Billboard = &dashboards.DashboardBillboardWidgetConfigurationInput{NRQLQueries: nrqlQueries, Thresholds: thresholds}
-		}
-	}
-
-	if cr.Line != nil {
-		if cr.Line.NRQLQueries != nil {
-			nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-			for _, q := range cr.Line.NRQLQueries {
-				item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: nrdb.NRQL(q.Query)}
-				nrqlQueries = append(nrqlQueries, item)
-			}
-			input.Line = &dashboards.DashboardLineWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-		}
-	}
-
-	input.Markdown = &dashboards.DashboardMarkdownWidgetConfigurationInput{
-		Text: pointy.StringValue(cr.Markdown.Text, ""),
-	}
-
-	if cr.Pie != nil {
-		if cr.Pie.NRQLQueries != nil {
-			nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-			for _, q := range cr.Pie.NRQLQueries {
-				item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: nrdb.NRQL(q.Query)}
-				nrqlQueries = append(nrqlQueries, item)
-			}
-			input.Pie = &dashboards.DashboardPieWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-		}
-	}
-
-	if cr.Table != nil {
-		if cr.Table.NRQLQueries != nil {
-			nrqlQueries := make([]dashboards.DashboardWidgetNRQLQueryInput, 0)
-			for _, q := range cr.Table.NRQLQueries {
-				item := dashboards.DashboardWidgetNRQLQueryInput{AccountID: q.AccountID, Query: nrdb.NRQL(q.Query)}
-				nrqlQueries = append(nrqlQueries, item)
-			}
-			input.Table = &dashboards.DashboardTableWidgetConfigurationInput{NRQLQueries: nrqlQueries}
-		}
-	}
-	return input
+	return input, errUnmarshalJSON
 }
 
 // GenerateDashboardWidgetLayoutInput generates an input object

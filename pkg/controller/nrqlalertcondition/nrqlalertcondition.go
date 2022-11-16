@@ -1,5 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
+Copyright 2022 The Crossplane Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,31 +23,27 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/newrelic/newrelic-client-go/newrelic"
-	"github.com/newrelic/newrelic-client-go/pkg/alerts"
+	"github.com/newrelic/newrelic-client-go/v2/newrelic"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/alerts"
 	"github.com/openlyinc/pointy"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller"
 
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
 	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/nrqlalertcondition/v1alpha1"
 	apisv1alpha1 "github.com/crossplane-contrib/provider-newrelic/apis/v1alpha1"
-	nr "github.com/crossplane-contrib/provider-newrelic/internal/clients"
+	nr "github.com/crossplane-contrib/provider-newrelic/pkg/clients"
 )
 
 const (
@@ -59,14 +55,12 @@ const (
 )
 
 // Setup adds a controller that reconciles Channel managed resources.
-func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter) error {
+func Setup(mgr ctrl.Manager, o controller.Options) error {
 	name := managed.ControllerName(v1alpha1.NrqlAlertConditionGroupKind)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
-		WithOptions(controller.Options{
-			RateLimiter: ratelimiter.NewController(rl),
-		}).
+		WithOptions(o.ForControllerRuntime()).
 		For(&v1alpha1.NrqlAlertCondition{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.NrqlAlertConditionGroupVersionKind),
@@ -75,10 +69,10 @@ func Setup(mgr ctrl.Manager, l logging.Logger, rl workqueue.RateLimiter) error {
 				usage: resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
 			}),
 			managed.WithConnectionPublishers(),
-			managed.WithPollInterval(30*time.Minute),
+			managed.WithPollInterval(o.PollInterval),
 			managed.WithReferenceResolver(managed.NewAPISimpleReferenceResolver(mgr.GetClient())),
 			managed.WithInitializers(),
-			managed.WithLogger(l.WithValues("controller", name)),
+			managed.WithLogger(o.Logger.WithValues("controller", name)),
 			managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name)))))
 }
 
@@ -310,11 +304,8 @@ func CreateNrqlCondition(ctx context.Context, client *newrelic.NewRelic, account
 	conditionType := input.Type
 	input.Type = ""
 	// "Argument \"condition\" has invalid value $condition.\nIn field \"type\": Unknown field."}
-	switch conditionType {
-	case "BASELINE":
+	if conditionType == "BASELINE" {
 		return client.Alerts.CreateNrqlConditionBaselineMutationWithContext(ctx, accountID, policyID, input)
-	case "OUTLIER":
-		return client.Alerts.CreateNrqlConditionOutlierMutationWithContext(ctx, accountID, policyID, input)
 	}
 	// Default is static
 	return client.Alerts.CreateNrqlConditionStaticMutationWithContext(ctx, accountID, policyID, input)
@@ -325,11 +316,8 @@ func UpdateNrqlConditionStaticMutationWithContext(ctx context.Context, client *n
 	conditionType := input.Type
 	input.Type = ""
 	// "Argument \"condition\" has invalid value $condition.\nIn field \"type\": Unknown field."}
-	switch conditionType {
-	case "BASELINE":
+	if conditionType == "BASELINE" {
 		return client.Alerts.UpdateNrqlConditionBaselineMutationWithContext(ctx, accountID, conditionID, input)
-	case "OUTLIER":
-		return client.Alerts.UpdateNrqlConditionOutlierMutationWithContext(ctx, accountID, conditionID, input)
 	}
 	// Default is static
 	return client.Alerts.UpdateNrqlConditionStaticMutationWithContext(ctx, accountID, conditionID, input)
@@ -467,8 +455,13 @@ func GenerateNrqlConditionUpdateInput(input alerts.NrqlConditionCreateInput) (al
 	// are now different.  Instead of constructing 2 different types, we will convert a
 	// `create` object into an `update` object.  It is easier than having to maintain more code
 	// https://github.com/newrelic/newrelic-client-go/pull/805
-	out, _ := json.Marshal(input)
+
 	var update alerts.NrqlConditionUpdateInput
+	out, errMarshal := json.Marshal(input)
+	if errMarshal != nil {
+		return update, errMarshal
+	}
+
 	err := json.Unmarshal(out, &update)
 	if err != nil {
 		return update, err
