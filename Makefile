@@ -54,16 +54,16 @@ IMAGES = provider-newrelic
 # ====================================================================================
 # Setup XPKG
 
-XPKG_REG_ORGS ?= xpkg.upbound.io/crossplane-contrib index.docker.io/crossplanecontrib
+XPKG_REG_ORGS ?= xpkg.upbound.io/smcavallo
 # NOTE(hasheddan): skip promoting on xpkg.upbound.io as channel tags are
 # inferred.
-XPKG_REG_ORGS_NO_PROMOTE ?= xpkg.upbound.io/crossplane-contrib
-XPKGS = provider-aws
+XPKG_REG_ORGS_NO_PROMOTE ?= xpkg.upbound.io/smcavallo
+XPKGS = provider-newrelic
 -include build/makelib/xpkg.mk
 
 # NOTE(hasheddan): we force image building to happen prior to xpkg build so that
 # we ensure image is present in daemon.
-xpkg.build.provider-aws: do.build.images
+xpkg.build.provider-newrelic: do.build.images
 
 # ====================================================================================
 # Targets
