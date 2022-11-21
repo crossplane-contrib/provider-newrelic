@@ -9,7 +9,7 @@ metadata:
     meta.crossplane.io/description: |
       The NewRelic Crossplane provider enables management for NewRelic Services.
     meta.crossplane.io/readme: |
-
-      `provider-newrelic` is the Crossplane provider for [NewRelic](https://www.newrelic.com/).
-      Available resources and their fields can be found in the [CRD
-      Docs](https://doc.crds.dev/github.com/crossplane/provider-newrelic).
+      `provider-newrelic` is the Crossplane provider for
+      [NewRelic](https://www.newrelic.com/). Available resources and their
+      fields can be found in the [CRD
+      Docs](https://marketplace.upbound.io/providers/smcavallo/provider-newrelic).
