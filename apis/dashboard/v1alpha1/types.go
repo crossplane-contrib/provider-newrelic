@@ -41,6 +41,9 @@ type DashboardParameters struct {
 	// Dashboard permissions configuration.
 	// +kubebuilder:validation:Enum=PUBLIC_READ_WRITE;PUBLIC_READ_ONLY;PRIVATE
 	Permissions *string `json:"permissions,omitempty"`
+
+	// Dashboard variables
+	Variables []DashboardVariable `json:"variables,omitempty"`
 }
 
 // DashboardPage is a type of resource
@@ -128,6 +131,56 @@ type DashboardWidgetNRQLQueryInput struct {
 // RawConfigurationPlatformOptions represents the platform widget options
 type RawConfigurationPlatformOptions struct {
 	IgnoreTimeRange bool `json:"ignoreTimeRange,omitempty"`
+}
+
+// DashboardVariable - Definition of a variable that is local to this dashboard. Variables are placeholders for dynamic values in widget NRQLs.
+type DashboardVariable struct {
+	// Default values for this variable. The actual value to be used will depend on the type.
+	DefaultValues []DashboardVariableDefaultItem `json:"defaultValues,omitempty"`
+	// Indicates whether this variable supports multiple selection or not. Only applies to variables of type NRQL or ENUM.
+	IsMultiSelection bool `json:"isMultiSelection,omitempty"`
+	// List of possible values for variables of type ENUM.
+	Items []DashboardVariableEnumItem `json:"items,omitempty"`
+	// Configuration for variables of type NRQL.
+	NRQLQuery DashboardVariableNRQLQuery `json:"nrqlQuery,omitempty"`
+	// Variable identifier.
+	Name string `json:"name,omitempty"`
+	// Indicates the strategy to apply when replacing a variable in a NRQL query.
+	// +kubebuilder:validation:Enum=DEFAULT;IDENTIFIER;NUMBER;STRING
+	ReplacementStrategy string `json:"replacementStrategy,omitempty"`
+	// Human-friendly display string for this variable.
+	Title string `json:"title,omitempty"`
+	// Specifies the data type of the variable and where its possible values may come from.
+	// +kubebuilder:validation:Enum=ENUM;NRQL;STRING
+	Type string `json:"type,omitempty"`
+}
+
+// DashboardVariableDefaultItem - Represents a possible default value item.
+type DashboardVariableDefaultItem struct {
+	// The value of this default item.
+	Value DashboardVariableDefaultValue `json:"value,omitempty"`
+}
+
+// DashboardVariableDefaultValue - Specifies a default value for variables.
+type DashboardVariableDefaultValue struct {
+	// Default string value.
+	String string `json:"string,omitempty"`
+}
+
+// DashboardVariableEnumItem - Represents a possible value for a variable of type ENUM.
+type DashboardVariableEnumItem struct {
+	// A human-friendly display string for this value.
+	Title string `json:"title,omitempty"`
+	// A possible variable value.
+	Value string `json:"value,omitempty"`
+}
+
+// DashboardVariableNRQLQuery - Configuration for variables of type NRQL.
+type DashboardVariableNRQLQuery struct {
+	// New Relic account ID(s) to issue the query against.
+	AccountIDs []int `json:"accountIds,omitempty"`
+	// NRQL formatted query.
+	Query string `json:"query"`
 }
 
 // DashboardObservation are the observable fields of a Policy.

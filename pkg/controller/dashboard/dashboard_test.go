@@ -30,12 +30,25 @@ import (
 
 type DashboardModifier func(dashboard *v1alpha1.Dashboard)
 
+func withVariables(m []v1alpha1.DashboardVariable) DashboardModifier {
+	return func(d *v1alpha1.Dashboard) {
+		d.Spec.ForProvider.Variables = m
+	}
+}
+
+func withPages(m []v1alpha1.DashboardPage) DashboardModifier {
+	return func(d *v1alpha1.Dashboard) {
+		d.Spec.ForProvider.Pages = m
+	}
+}
+
 func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 	cr := &v1alpha1.Dashboard{
 		Spec: v1alpha1.DashboardSpec{
 			ForProvider: v1alpha1.DashboardParameters{
 				AccountID: 1,
 				Name:      "test_dashboard",
+				Variables: []v1alpha1.DashboardVariable{},
 				Pages: []v1alpha1.DashboardPage{
 					{Name: "test_dashboard_page_1",
 						GUID: "PAGE1GUID",
@@ -101,6 +114,7 @@ func DashboardBillboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 			ForProvider: v1alpha1.DashboardParameters{
 				AccountID: 1,
 				Name:      "test_dashboard",
+				Variables: []v1alpha1.DashboardVariable{},
 				Pages: []v1alpha1.DashboardPage{
 					{Name: "test_dashboard_page_1",
 						GUID: "PAGE1GUID",
@@ -207,6 +221,70 @@ func TestIsUpToDate(t *testing.T) {
 					Permissions: "PUBLIC_READ_WRITE",
 				},
 			},
+			want: want{expected: false},
+		},
+		"VariablesSame": {
+			args: args{cr: *Dashboard(withPages([]v1alpha1.DashboardPage{}),
+				withVariables([]v1alpha1.DashboardVariable{{
+					DefaultValues:    []v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
+					IsMultiSelection: true,
+					NRQLQuery: v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+						Query: "SELECT count(*) from Metric"},
+					Name:                "TestVariable",
+					ReplacementStrategy: "STRING",
+					Title:               "TestTitle",
+					Type:                "NRQL",
+				},
+				})),
+				nr: entities.DashboardEntity{
+					Name:        "test_dashboard",
+					Description: "",
+					Pages:       []entities.DashboardPage{},
+					Permissions: "PUBLIC_READ_WRITE",
+					Variables: []entities.DashboardVariable{{
+						DefaultValues:    []entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
+						IsMultiSelection: true,
+						NRQLQuery: entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+							Query: "SELECT count(*) from Metric"},
+						Name:                "TestVariable",
+						ReplacementStrategy: "STRING",
+						Title:               "TestTitle",
+						Type:                "NRQL",
+					},
+					},
+				}},
+			want: want{expected: true},
+		},
+		"DiffVariablesFalse": {
+			args: args{cr: *Dashboard(withPages([]v1alpha1.DashboardPage{}),
+				withVariables([]v1alpha1.DashboardVariable{{
+					DefaultValues:    []v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
+					IsMultiSelection: true,
+					NRQLQuery: v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+						Query: "SELECT count(*) from Metric"},
+					Name:                "TestVariable",
+					ReplacementStrategy: "STRING",
+					Title:               "TestTitle",
+					Type:                "NRQL",
+				},
+				})),
+				nr: entities.DashboardEntity{
+					Name:        "test_dashboard",
+					Description: "",
+					Pages:       []entities.DashboardPage{},
+					Permissions: "PUBLIC_READ_WRITE",
+					Variables: []entities.DashboardVariable{{
+						DefaultValues:    []entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
+						IsMultiSelection: true,
+						NRQLQuery: entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+							Query: "SELECT count(*) from Metric WHERE environment='different'"},
+						Name:                "TestVariable",
+						ReplacementStrategy: "STRING",
+						Title:               "TestTitle",
+						Type:                "NRQL",
+					},
+					},
+				}},
 			want: want{expected: false},
 		},
 		"BillboardOutOfOrderThresholdTrue": {
@@ -551,6 +629,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 						},
 					}},
 				Permissions: "PUBLIC_READ_WRITE",
+				Variables:   []dashboards.DashboardVariableInput{},
 			},
 			}},
 	}

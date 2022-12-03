@@ -20,6 +20,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/newrelic/newrelic-client-go/v2/pkg/nrdb"
 	"sort"
 	"strconv"
 	"strings"
@@ -327,6 +328,7 @@ func GenerateDashboardInputFromEntity(cd entities.DashboardEntity) dashboards.Da
 		Description: cd.Description,
 		Permissions: cd.Permissions}
 	input.Pages = GenerateDashboardPageInputFromEntity(cd.Pages)
+	input.Variables = GenerateDashboardVariableInputFromEntity(cd.Variables)
 
 	return input
 }
@@ -400,6 +402,61 @@ func GenerateDashboardWidgetVisualizationInputFromEntity(cd entities.DashboardWi
 	return input
 }
 
+// GenerateDashboardVariableInputFromEntity generates an input object
+func GenerateDashboardVariableInputFromEntity(cd []entities.DashboardVariable) []dashboards.DashboardVariableInput {
+	input := make([]dashboards.DashboardVariableInput, 0)
+	for _, variable := range cd {
+
+		variableInput := dashboards.DashboardVariableInput{
+			DefaultValues:       GenerateDashboardVariableDefaultItemInputFromEntity(variable.DefaultValues),
+			IsMultiSelection:    variable.IsMultiSelection,
+			Items:               GenerateDashboardVariableEnumItemInputFromEntity(variable.Items),
+			NRQLQuery:           GenerateDashboardVariableNRQLQueryInputFromEntity(variable.NRQLQuery),
+			Name:                variable.Name,
+			ReplacementStrategy: dashboards.DashboardVariableReplacementStrategy(variable.ReplacementStrategy),
+			Title:               variable.Title,
+			Type:                dashboards.DashboardVariableType(variable.Type),
+		}
+		input = append(input, variableInput)
+	}
+
+	return input
+}
+
+// GenerateDashboardVariableDefaultItemInputFromEntity generates an input object
+func GenerateDashboardVariableDefaultItemInputFromEntity(cd []entities.DashboardVariableDefaultItem) []dashboards.DashboardVariableDefaultItemInput {
+	input := make([]dashboards.DashboardVariableDefaultItemInput, 0)
+	for _, variable := range cd {
+		variableInput := dashboards.DashboardVariableDefaultItemInput{
+			Value: dashboards.DashboardVariableDefaultValueInput{String: variable.Value.String},
+		}
+		input = append(input, variableInput)
+	}
+	return input
+}
+
+// GenerateDashboardVariableEnumItemInputFromEntity generates an input object
+func GenerateDashboardVariableEnumItemInputFromEntity(cd []entities.DashboardVariableEnumItem) []dashboards.DashboardVariableEnumItemInput {
+	input := make([]dashboards.DashboardVariableEnumItemInput, 0)
+	for _, variable := range cd {
+		variableInput := dashboards.DashboardVariableEnumItemInput{
+			Title: variable.Title,
+			Value: variable.Value,
+		}
+		input = append(input, variableInput)
+	}
+	return input
+}
+
+// GenerateDashboardVariableNRQLQueryInputFromEntity generates an input object
+func GenerateDashboardVariableNRQLQueryInputFromEntity(cd entities.DashboardVariableNRQLQuery) dashboards.DashboardVariableNRQLQueryInput {
+	input := dashboards.DashboardVariableNRQLQueryInput{
+		AccountIDs: cd.AccountIDs,
+		Query:      cd.Query,
+	}
+	return input
+}
+
 // GenerateDashboardInput generates an input object
 // from our managed object
 func GenerateDashboardInput(cr *v1alpha1.Dashboard) dashboards.DashboardInput {
@@ -415,6 +472,7 @@ func GenerateDashboardInput(cr *v1alpha1.Dashboard) dashboards.DashboardInput {
 	input.Permissions = permissions
 
 	input.Pages = GenerateDashboardPageInput(cr)
+	input.Variables = GenerateDashboardVariableInput(cr.Spec.ForProvider.Variables)
 
 	return input
 }
@@ -511,5 +569,60 @@ func GenerateDashboardWidgetLayoutInput(cr v1alpha1.DashboardWidgetLayout) dashb
 // GenerateDashboardWidgetVisualizationInput generates an input object
 func GenerateDashboardWidgetVisualizationInput(cr v1alpha1.DashboardWidgetVisualization) dashboards.DashboardWidgetVisualizationInput {
 	input := dashboards.DashboardWidgetVisualizationInput{ID: cr.ID}
+	return input
+}
+
+// GenerateDashboardVariableInput generates an input object
+func GenerateDashboardVariableInput(cr []v1alpha1.DashboardVariable) []dashboards.DashboardVariableInput {
+	input := make([]dashboards.DashboardVariableInput, 0)
+	for _, variable := range cr {
+
+		variableInput := dashboards.DashboardVariableInput{
+			DefaultValues:       GenerateDashboardVariableDefaultItemInput(variable.DefaultValues),
+			IsMultiSelection:    variable.IsMultiSelection,
+			Items:               GenerateDashboardVariableEnumItemInput(variable.Items),
+			NRQLQuery:           GenerateDashboardVariableNRQLQueryInput(variable.NRQLQuery),
+			Name:                variable.Name,
+			ReplacementStrategy: dashboards.DashboardVariableReplacementStrategy(variable.ReplacementStrategy),
+			Title:               variable.Title,
+			Type:                dashboards.DashboardVariableType(variable.Type),
+		}
+		input = append(input, variableInput)
+	}
+
+	return input
+}
+
+// GenerateDashboardVariableDefaultItemInput generates an input object
+func GenerateDashboardVariableDefaultItemInput(cr []v1alpha1.DashboardVariableDefaultItem) []dashboards.DashboardVariableDefaultItemInput {
+	input := make([]dashboards.DashboardVariableDefaultItemInput, 0)
+	for _, variable := range cr {
+		variableInput := dashboards.DashboardVariableDefaultItemInput{
+			Value: dashboards.DashboardVariableDefaultValueInput{String: variable.Value.String},
+		}
+		input = append(input, variableInput)
+	}
+	return input
+}
+
+// GenerateDashboardVariableEnumItemInput generates an input object
+func GenerateDashboardVariableEnumItemInput(cr []v1alpha1.DashboardVariableEnumItem) []dashboards.DashboardVariableEnumItemInput {
+	input := make([]dashboards.DashboardVariableEnumItemInput, 0)
+	for _, variable := range cr {
+		variableInput := dashboards.DashboardVariableEnumItemInput{
+			Title: variable.Title,
+			Value: variable.Value,
+		}
+		input = append(input, variableInput)
+	}
+	return input
+}
+
+// GenerateDashboardVariableNRQLQueryInput generates an input object
+func GenerateDashboardVariableNRQLQueryInput(cr v1alpha1.DashboardVariableNRQLQuery) dashboards.DashboardVariableNRQLQueryInput {
+	input := dashboards.DashboardVariableNRQLQueryInput{
+		AccountIDs: cr.AccountIDs,
+		Query:      nrdb.NRQL(cr.Query),
+	}
 	return input
 }
