@@ -61,6 +61,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
+		WithEventFilter(resource.DesiredStateChanged()).
 		For(&v1alpha1.NrqlAlertCondition{}).
 		Complete(managed.NewReconciler(mgr,
 			resource.ManagedKind(v1alpha1.NrqlAlertConditionGroupVersionKind),
