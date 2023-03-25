@@ -41,6 +41,7 @@ func Setup(mgr ctrl.Manager, o controller.Options) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
+		WithEventFilter(resource.DesiredStateChanged()).
 		For(&v1alpha1.ProviderConfig{}).
 		Watches(&source.Kind{Type: &v1alpha1.ProviderConfigUsage{}}, &resource.EnqueueRequestForProviderConfig{}).
 		Complete(providerconfig.NewReconciler(mgr, of,
