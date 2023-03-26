@@ -226,9 +226,9 @@ func TestIsUpToDate(t *testing.T) {
 		"VariablesSame": {
 			args: args{cr: *Dashboard(withPages([]v1alpha1.DashboardPage{}),
 				withVariables([]v1alpha1.DashboardVariable{{
-					DefaultValues:    []v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
+					DefaultValues:    &[]v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
 					IsMultiSelection: true,
-					NRQLQuery: v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+					NRQLQuery: &v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
 						Query: "SELECT count(*) from Metric"},
 					Name:                "TestVariable",
 					ReplacementStrategy: "STRING",
@@ -242,9 +242,9 @@ func TestIsUpToDate(t *testing.T) {
 					Pages:       []entities.DashboardPage{},
 					Permissions: "PUBLIC_READ_WRITE",
 					Variables: []entities.DashboardVariable{{
-						DefaultValues:    []entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
+						DefaultValues:    &[]entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
 						IsMultiSelection: true,
-						NRQLQuery: entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+						NRQLQuery: &entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
 							Query: "SELECT count(*) from Metric"},
 						Name:                "TestVariable",
 						ReplacementStrategy: "STRING",
@@ -258,9 +258,9 @@ func TestIsUpToDate(t *testing.T) {
 		"DiffVariablesFalse": {
 			args: args{cr: *Dashboard(withPages([]v1alpha1.DashboardPage{}),
 				withVariables([]v1alpha1.DashboardVariable{{
-					DefaultValues:    []v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
+					DefaultValues:    &[]v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
 					IsMultiSelection: true,
-					NRQLQuery: v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+					NRQLQuery: &v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
 						Query: "SELECT count(*) from Metric"},
 					Name:                "TestVariable",
 					ReplacementStrategy: "STRING",
@@ -274,9 +274,9 @@ func TestIsUpToDate(t *testing.T) {
 					Pages:       []entities.DashboardPage{},
 					Permissions: "PUBLIC_READ_WRITE",
 					Variables: []entities.DashboardVariable{{
-						DefaultValues:    []entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
+						DefaultValues:    &[]entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
 						IsMultiSelection: true,
-						NRQLQuery: entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+						NRQLQuery: &entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
 							Query: "SELECT count(*) from Metric WHERE environment='different'"},
 						Name:                "TestVariable",
 						ReplacementStrategy: "STRING",

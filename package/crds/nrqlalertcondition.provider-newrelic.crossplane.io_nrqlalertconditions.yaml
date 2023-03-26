@@ -197,6 +197,10 @@ spec:
                         minimum: 60
                         multipleOf: 60
                         type: integer
+                      evaluationDelay:
+                        type: integer
+                      evaluationOffset:
+                        type: integer
                       fillOption:
                         enum:
                         - LAST_VALUE
@@ -246,11 +250,6 @@ spec:
                     - STATIC
                     - BASELINE
                     - OUTLIER
-                    type: string
-                  valueFunction:
-                    enum:
-                    - SINGLE_VALUE
-                    - SUM
                     type: string
                   violationTimeLimitSeconds:
                     maximum: 2592000

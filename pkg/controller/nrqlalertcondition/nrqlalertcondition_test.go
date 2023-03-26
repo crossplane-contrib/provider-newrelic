@@ -41,7 +41,6 @@ func NrqlAlertCondition(m ...NrqlAlertConditionModifier) *v1alpha1.NrqlAlertCond
 				Enabled:    false,
 				//ViolationTimeLimit:        "average", // alerts.ValueFunctionTypes.Average,
 				ViolationTimeLimitSeconds: pointy.Int(2592000),
-				ValueFunction:             pointy.String("SINGLE_VALUE"),
 				Terms: []v1alpha1.NrqlConditionTerm{
 					{ThresholdDuration: 60, Operator: "ABOVE", Priority: "WARNING", Threshold: "2", ThresholdOccurrences: "ALL"},
 					{ThresholdDuration: 300, Operator: "ABOVE", Priority: "CRITICAL", Threshold: "5", ThresholdOccurrences: "ALL"},
@@ -420,7 +419,6 @@ func TestGenerateNrqlConditionUpdateInput(t *testing.T) {
 		"Same": {
 			args: args{cr: *NrqlAlertCondition()},
 			want: want{expected: alerts.NrqlConditionUpdateInput{
-				ValueFunction: &alerts.NrqlConditionValueFunctions.SingleValue,
 				NrqlConditionUpdateBase: alerts.NrqlConditionUpdateBase{Name: "test_nrql",
 					Type:                      alerts.NrqlConditionTypes.Static,
 					RunbookURL:                "runbookUrl",

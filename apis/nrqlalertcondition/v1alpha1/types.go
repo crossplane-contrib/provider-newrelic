@@ -41,8 +41,6 @@ type NrqlAlertConditionParameters struct {
 	Signal      Signal              `json:"signal"`
 	Expiration  *Expiration         `json:"expiration,omitempty"`
 	Description *string             `json:"description,omitempty"`
-	// +kubebuilder:validation:Enum=SINGLE_VALUE;SUM
-	ValueFunction *string `json:"valueFunction,omitempty"`
 
 	// +kubebuilder:validation:Enum=LOWER_ONLY;UPPER_AND_LOWER;UPPER_ONLY
 	BaselineDirection *string `json:"baselineDirection,omitempty"`
@@ -93,6 +91,8 @@ type Signal struct {
 	AggregationMethod *string `json:"aggregationMethod,omitempty"`
 	AggregationDelay  *int    `json:"aggregationDelay,omitempty"`
 	AggregationTimer  *int    `json:"aggregationTimer,omitempty"`
+	EvaluationOffset  *int    `json:"evaluationOffset,omitempty"`
+	EvaluationDelay   *int    `json:"evaluationDelay,omitempty"`
 }
 
 // Expiration are the configurable fields of a Condition
