@@ -360,12 +360,6 @@ func GenerateAlertConditionInput(cr *v1alpha1.NrqlAlertCondition) alerts.NrqlCon
 	terms := GenerateNrqlConditionTerm(cr)
 	input.Terms = terms
 
-	// Only valid for "STATIC" type
-	if cr.Spec.ForProvider.ValueFunction != nil {
-		valueFunction := alerts.NrqlConditionValueFunction(*cr.Spec.ForProvider.ValueFunction)
-		input.ValueFunction = &valueFunction
-	}
-
 	// Only valid for "BASELINE" type
 	if cr.Spec.ForProvider.BaselineDirection != nil {
 		baselineDirection := alerts.NrqlBaselineDirection(*cr.Spec.ForProvider.BaselineDirection)
@@ -405,6 +399,13 @@ func GenerateNrqlConditionSignal(cr *v1alpha1.NrqlAlertCondition) alerts.AlertsN
 		signal.AggregationWindow = cr.Spec.ForProvider.Signal.AggregationWindow
 	}
 
+	if cr.Spec.ForProvider.Signal.EvaluationDelay != nil {
+		signal.EvaluationDelay = cr.Spec.ForProvider.Signal.EvaluationDelay
+	}
+
+	if cr.Spec.ForProvider.Signal.EvaluationOffset != nil {
+		signal.EvaluationOffset = cr.Spec.ForProvider.Signal.EvaluationOffset
+	}
 	fillOption := alerts.AlertsFillOption(cr.Spec.ForProvider.Signal.FillOption)
 	signal.FillOption = &fillOption
 	if cr.Spec.ForProvider.Signal.FillValue != nil {
@@ -574,6 +575,14 @@ func signalsAreEqual(signal alerts.AlertsNrqlConditionCreateSignal, nrSignal ale
 		if !cmp.Equal(crAggregationMethod, nrAggregationMethod, cmpopts.EquateEmpty()) {
 			return false
 		}
+	}
+
+	if !cmp.Equal(pointy.IntValue(signal.EvaluationDelay, 0), pointy.IntValue(nrSignal.EvaluationDelay, 0), cmpopts.EquateEmpty()) {
+		return false
+	}
+
+	if !cmp.Equal(pointy.IntValue(signal.EvaluationOffset, 0), pointy.IntValue(nrSignal.EvaluationOffset, 0), cmpopts.EquateEmpty()) {
+		return false
 	}
 
 	if !cmp.Equal(pointy.IntValue(signal.AggregationDelay, 0), pointy.IntValue(nrSignal.AggregationDelay, 0), cmpopts.EquateEmpty()) {

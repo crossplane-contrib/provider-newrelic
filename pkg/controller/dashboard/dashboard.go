@@ -425,15 +425,18 @@ func GenerateDashboardVariableInputFromEntity(cd []entities.DashboardVariable) [
 }
 
 // GenerateDashboardVariableDefaultItemInputFromEntity generates an input object
-func GenerateDashboardVariableDefaultItemInputFromEntity(cd []entities.DashboardVariableDefaultItem) []dashboards.DashboardVariableDefaultItemInput {
+func GenerateDashboardVariableDefaultItemInputFromEntity(cd *[]entities.DashboardVariableDefaultItem) *[]dashboards.DashboardVariableDefaultItemInput {
+	if cd == nil {
+		return &[]dashboards.DashboardVariableDefaultItemInput{}
+	}
 	input := make([]dashboards.DashboardVariableDefaultItemInput, 0)
-	for _, variable := range cd {
+	for _, variable := range *cd {
 		variableInput := dashboards.DashboardVariableDefaultItemInput{
 			Value: dashboards.DashboardVariableDefaultValueInput{String: variable.Value.String},
 		}
 		input = append(input, variableInput)
 	}
-	return input
+	return &input
 }
 
 // GenerateDashboardVariableEnumItemInputFromEntity generates an input object
@@ -450,8 +453,8 @@ func GenerateDashboardVariableEnumItemInputFromEntity(cd []entities.DashboardVar
 }
 
 // GenerateDashboardVariableNRQLQueryInputFromEntity generates an input object
-func GenerateDashboardVariableNRQLQueryInputFromEntity(cd entities.DashboardVariableNRQLQuery) dashboards.DashboardVariableNRQLQueryInput {
-	input := dashboards.DashboardVariableNRQLQueryInput{
+func GenerateDashboardVariableNRQLQueryInputFromEntity(cd *entities.DashboardVariableNRQLQuery) *dashboards.DashboardVariableNRQLQueryInput {
+	input := &dashboards.DashboardVariableNRQLQueryInput{
 		AccountIDs: cd.AccountIDs,
 		Query:      cd.Query,
 	}
@@ -595,15 +598,18 @@ func GenerateDashboardVariableInput(cr []v1alpha1.DashboardVariable) []dashboard
 }
 
 // GenerateDashboardVariableDefaultItemInput generates an input object
-func GenerateDashboardVariableDefaultItemInput(cr []v1alpha1.DashboardVariableDefaultItem) []dashboards.DashboardVariableDefaultItemInput {
+func GenerateDashboardVariableDefaultItemInput(cr *[]v1alpha1.DashboardVariableDefaultItem) *[]dashboards.DashboardVariableDefaultItemInput {
+	if cr == nil {
+		return &[]dashboards.DashboardVariableDefaultItemInput{}
+	}
 	input := make([]dashboards.DashboardVariableDefaultItemInput, 0)
-	for _, variable := range cr {
+	for _, variable := range *cr {
 		variableInput := dashboards.DashboardVariableDefaultItemInput{
 			Value: dashboards.DashboardVariableDefaultValueInput{String: variable.Value.String},
 		}
 		input = append(input, variableInput)
 	}
-	return input
+	return &input
 }
 
 // GenerateDashboardVariableEnumItemInput generates an input object
@@ -620,10 +626,13 @@ func GenerateDashboardVariableEnumItemInput(cr []v1alpha1.DashboardVariableEnumI
 }
 
 // GenerateDashboardVariableNRQLQueryInput generates an input object
-func GenerateDashboardVariableNRQLQueryInput(cr v1alpha1.DashboardVariableNRQLQuery) dashboards.DashboardVariableNRQLQueryInput {
+func GenerateDashboardVariableNRQLQueryInput(cr *v1alpha1.DashboardVariableNRQLQuery) *dashboards.DashboardVariableNRQLQueryInput {
+	if cr == nil {
+		return &dashboards.DashboardVariableNRQLQueryInput{}
+	}
 	input := dashboards.DashboardVariableNRQLQueryInput{
 		AccountIDs: cr.AccountIDs,
 		Query:      nrdb.NRQL(cr.Query),
 	}
-	return input
+	return &input
 }

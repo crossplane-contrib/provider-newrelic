@@ -6,7 +6,7 @@ require (
 	github.com/crossplane/crossplane-runtime v0.20.0-rc.0.0.20230320143010-c424c4aca5b0
 	github.com/crossplane/crossplane-tools v0.0.0-20220310165030-1f43fc12793e
 	github.com/google/go-cmp v0.5.9
-	github.com/newrelic/newrelic-client-go/v2 v2.6.0
+	github.com/newrelic/newrelic-client-go/v2 v2.17.0
 	github.com/openlyinc/pointy v1.2.0
 	github.com/pkg/errors v0.9.1
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
@@ -42,7 +42,7 @@ require (
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
-	github.com/imdario/mergo v0.3.12 // indirect
+	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect

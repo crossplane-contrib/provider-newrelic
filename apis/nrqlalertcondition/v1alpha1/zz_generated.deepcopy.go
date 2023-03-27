@@ -165,11 +165,6 @@ func (in *NrqlAlertConditionParameters) DeepCopyInto(out *NrqlAlertConditionPara
 		*out = new(string)
 		**out = **in
 	}
-	if in.ValueFunction != nil {
-		in, out := &in.ValueFunction, &out.ValueFunction
-		*out = new(string)
-		**out = **in
-	}
 	if in.BaselineDirection != nil {
 		in, out := &in.BaselineDirection, &out.BaselineDirection
 		*out = new(string)
@@ -271,6 +266,16 @@ func (in *Signal) DeepCopyInto(out *Signal) {
 	}
 	if in.AggregationTimer != nil {
 		in, out := &in.AggregationTimer, &out.AggregationTimer
+		*out = new(int)
+		**out = **in
+	}
+	if in.EvaluationOffset != nil {
+		in, out := &in.EvaluationOffset, &out.EvaluationOffset
+		*out = new(int)
+		**out = **in
+	}
+	if in.EvaluationDelay != nil {
+		in, out := &in.EvaluationDelay, &out.EvaluationDelay
 		*out = new(int)
 		**out = **in
 	}
