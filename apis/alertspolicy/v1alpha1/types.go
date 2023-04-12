@@ -1,5 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
+Copyright 2023 The Crossplane Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,29 +24,32 @@ import (
 
 // https://rpm.newrelic.com/api/explore/alerts_policies/list
 
-// AlertsPolicyParameters are the configurable fields of a Policy.
+// AlertsPolicyParameters - Container for conditions with associated notifications channels.
 type AlertsPolicyParameters struct {
+	// Primary key for policies.
 	ID string `json:"id,omitempty"`
+	// Determines how incidents are created for critical violations of the conditions contained in the policy.
 	// +kubebuilder:validation:Enum=PER_CONDITION;PER_CONDITION_AND_TARGET;PER_POLICY
 	IncidentPreference string `json:"incidentPreference"`
-	Name               string `json:"name"`
-	ChannelIDs         []int  `json:"channelIds"`
+	// Description of the policy.
+	Name       string `json:"name"`
+	ChannelIDs []int  `json:"channelIds"`
 }
 
-// AlertsPolicyObservation are the observable fields of a Policy.
+// AlertsPolicyObservation are the observable fields of a AlertsPolicy.
 type AlertsPolicyObservation struct {
 	// The stable and unique string id from NewRelic.
 	ID              string `json:"id,omitempty"`
 	ObservableField string `json:"observableField,omitempty"`
 }
 
-// A AlertsPolicySpec defines the desired state of a Policy.
+// AlertsPolicySpec defines the desired state of a AlertsPolicy.
 type AlertsPolicySpec struct {
 	xpv1.ResourceSpec `json:",inline"`
 	ForProvider       AlertsPolicyParameters `json:"forProvider"`
 }
 
-// A AlertsPolicyStatus represents the observed state of a Policy.
+// AlertsPolicyStatus represents the observed state of a AlertsPolicy.
 type AlertsPolicyStatus struct {
 	xpv1.ResourceStatus `json:",inline"`
 	AtProvider          AlertsPolicyObservation `json:"atProvider,omitempty"`
@@ -54,7 +57,7 @@ type AlertsPolicyStatus struct {
 
 // +kubebuilder:object:root=true
 
-// A AlertsPolicy is an example API type.
+// AlertsPolicy is an example API type.
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="ID",type="string",JSONPath=".status.atProvider.id"
 // +kubebuilder:printcolumn:name="READY",type="string",JSONPath=".status.conditions[?(@.type=='Ready')].status"
@@ -83,7 +86,7 @@ func (in *AlertsPolicy) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionD
 
 // +kubebuilder:object:root=true
 
-// AlertsPolicyList contains a list of Policy
+// AlertsPolicyList contains a list of AlertsPolicy
 type AlertsPolicyList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

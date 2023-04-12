@@ -35,7 +35,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: A AlertsPolicy is an example API type.
+        description: AlertsPolicy is an example API type.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -50,7 +50,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: A AlertsPolicySpec defines the desired state of a Policy.
+            description: AlertsPolicySpec defines the desired state of a AlertsPolicy.
             properties:
               deletionPolicy:
                 default: Delete
@@ -62,22 +62,26 @@ spec:
                 - Delete
                 type: string
               forProvider:
-                description: AlertsPolicyParameters are the configurable fields of
-                  a Policy.
+                description: AlertsPolicyParameters - Container for conditions with
+                  associated notifications channels.
                 properties:
                   channelIds:
                     items:
                       type: integer
                     type: array
                   id:
+                    description: Primary key for policies.
                     type: string
                   incidentPreference:
+                    description: Determines how incidents are created for critical
+                      violations of the conditions contained in the policy.
                     enum:
                     - PER_CONDITION
                     - PER_CONDITION_AND_TARGET
                     - PER_POLICY
                     type: string
                   name:
+                    description: Description of the policy.
                     type: string
                 required:
                 - channelIds
@@ -256,11 +260,11 @@ spec:
             - forProvider
             type: object
           status:
-            description: A AlertsPolicyStatus represents the observed state of a Policy.
+            description: AlertsPolicyStatus represents the observed state of a AlertsPolicy.
             properties:
               atProvider:
                 description: AlertsPolicyObservation are the observable fields of
-                  a Policy.
+                  a AlertsPolicy.
                 properties:
                   id:
                     description: The stable and unique string id from NewRelic.
