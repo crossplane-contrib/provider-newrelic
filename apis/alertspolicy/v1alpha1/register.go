@@ -1,5 +1,5 @@
 /*
-Copyright 2020 The Crossplane Authors.
+Copyright 2023 The Crossplane Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ var (
 	SchemeBuilder = &scheme.Builder{GroupVersion: SchemeGroupVersion}
 )
 
-// Policy type metadata.
+// AlertsPolicy type metadata.
 var (
 	AlertsPolicyKind             = reflect.TypeOf(AlertsPolicy{}).Name()
 	AlertsPolicyGroupKind        = schema.GroupKind{Group: Group, Kind: AlertsPolicyKind}.String()
