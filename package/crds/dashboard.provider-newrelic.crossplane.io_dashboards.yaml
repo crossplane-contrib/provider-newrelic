@@ -134,7 +134,7 @@ spec:
                                       properties:
                                         accountId:
                                           description: accountId
-                                          type: string
+                                          type: integer
                                         query:
                                           description: NRQL formatted query
                                           type: string

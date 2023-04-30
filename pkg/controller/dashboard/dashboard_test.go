@@ -62,7 +62,7 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1234567890, Query: "Select * FROM Metric"}},
 								},
 							},
 							{ID: pointy.String("test_dashboard_widget_2"),
@@ -74,7 +74,7 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1234567890, Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -91,7 +91,7 @@ func Dashboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1234567890, Query: "Select * FROM Metric"}},
 								},
 							},
 						},
@@ -128,7 +128,7 @@ func DashboardBillboard(m ...DashboardModifier) *v1alpha1.Dashboard {
 								},
 								Visualization: v1alpha1.DashboardWidgetVisualization{ID: "viz.area"},
 								RawConfiguration: &v1alpha1.DashboardWidgetRawConfiguration{
-									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: "1", Query: "Select * FROM Metric"}},
+									NRQLQueries: &[]v1alpha1.DashboardWidgetNRQLQueryInput{{AccountID: 1234567890, Query: "Select * FROM Metric"}},
 									Thresholds: []v1alpha1.DashboardBillboardWidgetThresholdInput{{AlertSeverity: pointy.String("Warning"), Value: pointy.Float64(50)},
 										{AlertSeverity: pointy.String("Critical"), Value: pointy.Float64(90)},
 									},
@@ -182,7 +182,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 							{ID: "test_dashboard_widget_2",
@@ -194,7 +194,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 						},
@@ -213,7 +213,7 @@ func TestIsUpToDate(t *testing.T) {
 									},
 									Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 									Configuration: entities.DashboardWidgetConfiguration{
-										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 									},
 								},
 							},
@@ -228,7 +228,7 @@ func TestIsUpToDate(t *testing.T) {
 				withVariables([]v1alpha1.DashboardVariable{{
 					DefaultValues:    &[]v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
 					IsMultiSelection: true,
-					NRQLQuery: &v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+					NRQLQuery: &v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1234567890},
 						Query: "SELECT count(*) from Metric"},
 					Name:                "TestVariable",
 					ReplacementStrategy: "STRING",
@@ -244,7 +244,7 @@ func TestIsUpToDate(t *testing.T) {
 					Variables: []entities.DashboardVariable{{
 						DefaultValues:    &[]entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
 						IsMultiSelection: true,
-						NRQLQuery: &entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+						NRQLQuery: &entities.DashboardVariableNRQLQuery{AccountIDs: []int{1234567890},
 							Query: "SELECT count(*) from Metric"},
 						Name:                "TestVariable",
 						ReplacementStrategy: "STRING",
@@ -260,7 +260,7 @@ func TestIsUpToDate(t *testing.T) {
 				withVariables([]v1alpha1.DashboardVariable{{
 					DefaultValues:    &[]v1alpha1.DashboardVariableDefaultItem{{Value: v1alpha1.DashboardVariableDefaultValue{String: "*"}}},
 					IsMultiSelection: true,
-					NRQLQuery: &v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+					NRQLQuery: &v1alpha1.DashboardVariableNRQLQuery{AccountIDs: []int{1234567890},
 						Query: "SELECT count(*) from Metric"},
 					Name:                "TestVariable",
 					ReplacementStrategy: "STRING",
@@ -276,7 +276,7 @@ func TestIsUpToDate(t *testing.T) {
 					Variables: []entities.DashboardVariable{{
 						DefaultValues:    &[]entities.DashboardVariableDefaultItem{{Value: entities.DashboardVariableDefaultValue{String: "*"}}},
 						IsMultiSelection: true,
-						NRQLQuery: &entities.DashboardVariableNRQLQuery{AccountIDs: []int{1},
+						NRQLQuery: &entities.DashboardVariableNRQLQuery{AccountIDs: []int{1234567890},
 							Query: "SELECT count(*) from Metric WHERE environment='different'"},
 						Name:                "TestVariable",
 						ReplacementStrategy: "STRING",
@@ -307,7 +307,7 @@ func TestIsUpToDate(t *testing.T) {
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
 									Billboard: entities.DashboardBillboardWidgetConfiguration{
-										NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}},
+										NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}},
 										Thresholds: []entities.DashboardBillboardWidgetThreshold{
 											// These are out of order
 											{AlertSeverity: "Critical", Value: 90},
@@ -342,7 +342,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 							{ID: "test_dashboard_widget_2",
@@ -354,7 +354,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 						},
@@ -374,7 +374,7 @@ func TestIsUpToDate(t *testing.T) {
 									Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
 									RawConfiguration: entities.DashboardWidgetRawConfiguration("{\n  \"facet\": {\n    \"showOtherSeries\": false\n    },\n  \"legend\": {\n    \"enabled\": true\n    },\"nrqlQueries\": [\n                    {\n                      \"accountId\": 1448011,\n                      \"query\": \"SELECT count(aws.states.ExecutionsStarted) FROM Metric WHERE tags.AppName = ''CustomerPipeline'' AND tags.EnvName = ''prod-us'' TIMESERIES FACET tags.tf_ignore_pipeline_version \"\n    }\n  ]\n}"),
 									Configuration: entities.DashboardWidgetConfiguration{
-										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 									},
 								},
 							},
@@ -403,7 +403,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 							{ID: "test_dashboard_widget_1",
@@ -415,7 +415,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 						},
@@ -434,7 +434,7 @@ func TestIsUpToDate(t *testing.T) {
 									},
 									Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 									Configuration: entities.DashboardWidgetConfiguration{
-										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 									},
 								},
 							},
@@ -463,7 +463,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 							{ID: "test_dashboard_widget_2",
@@ -475,7 +475,7 @@ func TestIsUpToDate(t *testing.T) {
 								},
 								Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 								Configuration: entities.DashboardWidgetConfiguration{
-									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+									Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 								},
 							},
 						},
@@ -494,7 +494,7 @@ func TestIsUpToDate(t *testing.T) {
 									},
 									Visualization: entities.DashboardWidgetVisualization{ID: "viz.area"},
 									Configuration: entities.DashboardWidgetConfiguration{
-										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1, Query: "Select * FROM Metric"}}},
+										Area: entities.DashboardAreaWidgetConfiguration{NRQLQueries: []entities.DashboardWidgetNRQLQuery{{AccountID: 1234567890, Query: "Select * FROM Metric"}}},
 									},
 								},
 							},
@@ -547,7 +547,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Width:  1,
 							},
 							Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
-							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1234567890,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 						{ID: "test_dashboard_widget_1",
 							Title: "dashboard_title_1", Layout: entities.DashboardWidgetLayout{
@@ -557,7 +557,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Width:  1,
 							},
 							Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
-							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1234567890,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 					},
 				},
@@ -574,7 +574,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 									Width:  1,
 								},
 								Visualization:    entities.DashboardWidgetVisualization{ID: "viz.area"},
-								RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
+								RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1234567890,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 							},
 						},
 					}},
@@ -597,7 +597,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Width:  1,
 							},
 							Visualization:    dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
-							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1234567890,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 						{ID: "test_dashboard_widget_2",
 							Title: "dashboard_title_2", Layout: dashboards.DashboardWidgetLayoutInput{
@@ -607,7 +607,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 								Width:  1,
 							},
 							Visualization:    dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
-							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
+							RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1234567890,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 						},
 					},
 				},
@@ -624,7 +624,7 @@ func TestGenerateDashboardPageInputFromEntity(t *testing.T) {
 									Width:  1,
 								},
 								Visualization:    dashboards.DashboardWidgetVisualizationInput{ID: "viz.area"},
-								RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
+								RawConfiguration: []byte("\"\\\"nrqlQueries\\\": [\\n{\\n\\\"accountId\\\": 1234567890,\\n \\\"query\\\": \\\"\\\"Select * FROM Metric \\\"\\n}\\n]\""),
 							},
 						},
 					}},
