@@ -123,7 +123,7 @@ type DashboardBillboardWidgetThresholdInput struct {
 // DashboardWidgetNRQLQueryInput - NRQL query used by a widget
 type DashboardWidgetNRQLQueryInput struct {
 	// accountId
-	AccountID string `json:"accountId"`
+	AccountID int `json:"accountId"`
 	// NRQL formatted query
 	Query string `json:"query"`
 }
@@ -233,7 +233,7 @@ func (in *Dashboard) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDeta
 
 // +kubebuilder:object:root=true
 
-// DashboardList contains a list of Policy
+// DashboardList contains a list of Dashboard
 type DashboardList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
