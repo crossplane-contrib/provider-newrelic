@@ -28,6 +28,9 @@ type ProviderConfigSpec struct {
 	Credentials ProviderCredentials `json:"credentials"`
 	// AccountID required by nerdgraph API
 	AccountID string `json:"account_id,omitempty"`
+	// Region of the account (default: US)
+	// +kubebuilder:validation:Enum=US;EU
+	Region string `json:"region,omitempty"`
 }
 
 // ProviderCredentials required to authenticate.

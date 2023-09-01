@@ -113,8 +113,11 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 		return nil, errors.Wrap(err, errGetAccountID)
 	}
 
+	region := pc.Spec.Region
+
 	// Create a client using "NEW_RELIC_API_KEY"
-	nrClient, err := nr.GetNewRelicClient(strings.TrimSpace(string(data)))
+	nrClient, err := nr.GetNewRelicClient(strings.TrimSpace(string(data)), strings.TrimSpace(region))
+
 	if err != nil {
 		return nil, err
 	}

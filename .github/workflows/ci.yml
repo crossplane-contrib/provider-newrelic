@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -86,7 +86,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -126,7 +126,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -175,18 +175,18 @@ jobs:
 
     steps:
       - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           version: ${{ env.DOCKER_BUILDX_VERSION }}
           install: true
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -237,18 +237,18 @@ jobs:
 
     steps:
       - name: Setup QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: all
 
       - name: Setup Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         with:
           version: ${{ env.DOCKER_BUILDX_VERSION }}
           install: true
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 

@@ -46,6 +46,9 @@ spec:
               account_id:
                 description: AccountID required by nerdgraph API
                 type: string
+              region:
+                description: 'Region of the account (default: US)'
+                type: string
               credentials:
                 description: Credentials required to authenticate to this provider.
                 properties:
