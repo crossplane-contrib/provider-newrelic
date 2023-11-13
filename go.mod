@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/crossplane/crossplane-runtime v0.20.0-rc.0.0.20230320143010-c424c4aca5b0
 	github.com/crossplane/crossplane-tools v0.0.0-20220310165030-1f43fc12793e
-	github.com/google/go-cmp v0.5.9
+	github.com/google/go-cmp v0.6.0
 	github.com/newrelic/newrelic-client-go/v2 v2.22.0
 	github.com/openlyinc/pointy v1.2.0
 	github.com/pkg/errors v0.9.1
