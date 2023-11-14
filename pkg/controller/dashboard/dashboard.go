@@ -153,7 +153,7 @@ type external struct {
 	accountID int
 }
 
-func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) { //nolint:gocyclo
+func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
 	cr, ok := mg.(*v1alpha1.Dashboard)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDashboard)
@@ -527,7 +527,7 @@ func GenerateDashboardPageInput(cr *v1alpha1.Dashboard) []dashboards.DashboardPa
 }
 
 // GenerateDashboardWidgetInput generates an input object
-func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.DashboardWidgetInput { //nolint:gocyclo
+func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.DashboardWidgetInput {
 	input := make([]dashboards.DashboardWidgetInput, 0)
 
 	for _, widget := range cr.Widgets {
@@ -563,7 +563,7 @@ func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.Dashbo
 }
 
 // GenerateDashboardWidgetRawConfigurationInput generates an input object
-func GenerateDashboardWidgetRawConfigurationInput(cr *v1alpha1.DashboardWidgetRawConfiguration) (entities.DashboardWidgetRawConfiguration, error) { //nolint:gocyclo
+func GenerateDashboardWidgetRawConfigurationInput(cr *v1alpha1.DashboardWidgetRawConfiguration) (entities.DashboardWidgetRawConfiguration, error) {
 	input := entities.DashboardWidgetRawConfiguration{}
 
 	out, errMarshal := json.Marshal(cr)

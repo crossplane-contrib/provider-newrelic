@@ -273,7 +273,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	return err
 }
 
-func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.AlertsPolicy, response *alerts.AlertsPolicy) { //nolint:gocyclo
+func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.AlertsPolicy, response *alerts.AlertsPolicy) {
 	// Set the ID, if not set
 	ext := meta.GetExternalName(cr)
 	if cr.Spec.ForProvider.ID == "" || ext == "" || ext != cr.Spec.ForProvider.Name {

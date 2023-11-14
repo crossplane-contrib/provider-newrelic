@@ -266,7 +266,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	return err
 }
 
-func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.NrqlAlertCondition, response *alerts.NrqlAlertCondition) { //nolint:gocyclo
+func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.NrqlAlertCondition, response *alerts.NrqlAlertCondition) {
 	// Set the ID, if not set
 	ext := meta.GetExternalName(cr)
 	if cr.Spec.ForProvider.ID == "" || ext == "" || ext != cr.Spec.ForProvider.Name {
@@ -490,7 +490,7 @@ func GenerateNrqlConditionUpdateInput(input alerts.NrqlConditionCreateInput) (al
 }
 
 // IsUpToDate performs comparison
-func IsUpToDate(p *v1alpha1.NrqlAlertCondition, cd *alerts.NrqlAlertCondition) bool { //nolint:gocyclo
+func IsUpToDate(p *v1alpha1.NrqlAlertCondition, cd *alerts.NrqlAlertCondition) bool {
 
 	input := GenerateAlertConditionInput(p)
 
