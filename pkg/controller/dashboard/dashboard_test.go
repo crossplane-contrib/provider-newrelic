@@ -23,7 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/newrelic/newrelic-client-go/v2/pkg/dashboards"
 	"github.com/newrelic/newrelic-client-go/v2/pkg/entities"
-	"github.com/openlyinc/pointy"
+	"go.openly.dev/pointy"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/dashboard/v1alpha1"
 )

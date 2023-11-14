@@ -24,6 +24,13 @@ import (
 	"strconv"
 	"strings"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/pkg/connection"
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
+	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/newrelic/newrelic-client-go/v2/newrelic"
@@ -31,22 +38,16 @@ import (
 	"github.com/newrelic/newrelic-client-go/v2/pkg/dashboards"
 	"github.com/newrelic/newrelic-client-go/v2/pkg/entities"
 	"github.com/newrelic/newrelic-client-go/v2/pkg/nrdb"
-	"github.com/openlyinc/pointy"
 	"github.com/pkg/errors"
+	"go.openly.dev/pointy"
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
-
 	"github.com/crossplane-contrib/provider-newrelic/apis/dashboard/v1alpha1"
 	apisv1alpha1 "github.com/crossplane-contrib/provider-newrelic/apis/v1alpha1"
 	nr "github.com/crossplane-contrib/provider-newrelic/pkg/clients"
+	"github.com/crossplane-contrib/provider-newrelic/pkg/features"
 )
 
 const (
@@ -57,27 +58,43 @@ const (
 	errGetAccountID = "cannot get accountId from ProviderConfig"
 )
 
-// Setup adds a controller that reconciles a managed resources.
+// Setup adds a controller that reconciles Dashboard.
 func Setup(mgr ctrl.Manager, o controller.Options) error {
 	name := managed.ControllerName(v1alpha1.DashboardGroupKind)
+
+	cps := []managed.ConnectionPublisher{managed.NewAPISecretPublisher(mgr.GetClient(), mgr.GetScheme())}
+	if o.Features.Enabled(features.EnableAlphaExternalSecretStores) {
+		cps = append(cps, connection.NewDetailsManager(mgr.GetClient(), apisv1alpha1.StoreConfigGroupVersionKind))
+	}
+
+	reconcilerOpts := []managed.ReconcilerOption{
+		managed.WithExternalConnecter(&connector{
+			kube:  mgr.GetClient(),
+			usage: resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
+		}),
+		managed.WithConnectionPublishers(),
+		managed.WithInitializers(),
+		managed.WithPollInterval(o.PollInterval),
+		managed.WithReferenceResolver(managed.NewAPISimpleReferenceResolver(mgr.GetClient())),
+		managed.WithLogger(o.Logger.WithValues("controller", name)),
+		managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name))),
+		managed.WithConnectionPublishers(cps...),
+	}
+
+	if o.Features.Enabled(features.EnableAlphaManagementPolicies) {
+		reconcilerOpts = append(reconcilerOpts, managed.WithManagementPolicies())
+	}
+
+	r := managed.NewReconciler(mgr,
+		resource.ManagedKind(v1alpha1.DashboardGroupVersionKind),
+		reconcilerOpts...)
 
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
 		WithEventFilter(resource.DesiredStateChanged()).
 		For(&v1alpha1.Dashboard{}).
-		Complete(managed.NewReconciler(mgr,
-			resource.ManagedKind(v1alpha1.DashboardGroupVersionKind),
-			managed.WithExternalConnecter(&connector{
-				kube:  mgr.GetClient(),
-				usage: resource.NewProviderConfigUsageTracker(mgr.GetClient(), &apisv1alpha1.ProviderConfigUsage{}),
-			}),
-			managed.WithConnectionPublishers(),
-			managed.WithPollInterval(o.PollInterval),
-			managed.WithReferenceResolver(managed.NewAPISimpleReferenceResolver(mgr.GetClient())),
-			managed.WithInitializers(),
-			managed.WithLogger(o.Logger.WithValues("controller", name)),
-			managed.WithRecorder(event.NewAPIRecorder(mgr.GetEventRecorderFor(name)))))
+		Complete(r)
 }
 
 // A connector is expected to produce an ExternalClient when its Connect method
@@ -136,7 +153,7 @@ type external struct {
 	accountID int
 }
 
-func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) { // nolint:gocyclo
+func (c *external) Observe(ctx context.Context, mg resource.Managed) (managed.ExternalObservation, error) {
 	cr, ok := mg.(*v1alpha1.Dashboard)
 	if !ok {
 		return managed.ExternalObservation{}, errors.New(errNotDashboard)
@@ -277,7 +294,7 @@ func IsUpToDate(p *v1alpha1.Dashboard, cd entities.DashboardEntity) bool {
 }
 
 // UpdateGUIDS updates all the GUIDs and IDs in our object to match what was created by the API
-func UpdateGUIDS(ctx context.Context, c *external, cr *v1alpha1.Dashboard, dashboard dashboards.DashboardEntityResult) { // nolint:gocyclo
+func UpdateGUIDS(ctx context.Context, c *external, cr *v1alpha1.Dashboard, dashboard dashboards.DashboardEntityResult) { //nolint:gocyclo
 
 	needsKubernetesUpdate := false
 
@@ -510,7 +527,7 @@ func GenerateDashboardPageInput(cr *v1alpha1.Dashboard) []dashboards.DashboardPa
 }
 
 // GenerateDashboardWidgetInput generates an input object
-func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.DashboardWidgetInput { // nolint:gocyclo
+func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.DashboardWidgetInput {
 	input := make([]dashboards.DashboardWidgetInput, 0)
 
 	for _, widget := range cr.Widgets {
@@ -546,7 +563,7 @@ func GenerateDashboardWidgetInput(cr v1alpha1.DashboardPage) []dashboards.Dashbo
 }
 
 // GenerateDashboardWidgetRawConfigurationInput generates an input object
-func GenerateDashboardWidgetRawConfigurationInput(cr *v1alpha1.DashboardWidgetRawConfiguration) (entities.DashboardWidgetRawConfiguration, error) { // nolint:gocyclo
+func GenerateDashboardWidgetRawConfigurationInput(cr *v1alpha1.DashboardWidgetRawConfiguration) (entities.DashboardWidgetRawConfiguration, error) {
 	input := entities.DashboardWidgetRawConfiguration{}
 
 	out, errMarshal := json.Marshal(cr)

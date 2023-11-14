@@ -19,11 +19,10 @@ package v1alpha1
 import (
 	"context"
 
-	"github.com/pkg/errors"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/crossplane/crossplane-runtime/pkg/reference"
 	"github.com/crossplane/crossplane-runtime/pkg/resource"
+	"github.com/pkg/errors"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	v1alpha "github.com/crossplane-contrib/provider-newrelic/apis/alertspolicy/v1alpha1"
 )
@@ -32,8 +31,11 @@ import (
 func (mg *NrqlAlertCondition) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPIResolver(c, mg)
 
+	var rsp reference.ResolutionResponse
+	var err error
+
 	// Resolve spec.forProvider.AlertNrqlCondition
-	rsp, err := r.Resolve(ctx, reference.ResolutionRequest{
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: mg.Spec.ForProvider.AlertsPolicyID,
 		Reference:    mg.Spec.ForProvider.AlertsPolicyRef,
 		Selector:     mg.Spec.ForProvider.AlertsPolicySelector,

@@ -21,18 +21,20 @@ import (
 	"path/filepath"
 	"time"
 
-	"gopkg.in/alecthomas/kingpin.v2"
-	"k8s.io/client-go/tools/leaderelection/resourcelock"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
+	"github.com/alecthomas/kingpin/v2"
 	xpcontroller "github.com/crossplane/crossplane-runtime/pkg/controller"
 	"github.com/crossplane/crossplane-runtime/pkg/feature"
 	"github.com/crossplane/crossplane-runtime/pkg/logging"
 	"github.com/crossplane/crossplane-runtime/pkg/ratelimiter"
+	"go.uber.org/zap/zapcore"
+	"k8s.io/client-go/tools/leaderelection/resourcelock"
+	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis"
 	"github.com/crossplane-contrib/provider-newrelic/pkg/controller"
+	"github.com/crossplane-contrib/provider-newrelic/pkg/features"
 )
 
 func main() {
@@ -43,11 +45,13 @@ func main() {
 		pollInterval     = app.Flag("poll", "Poll interval controls how often an individual resource should be checked for drift.").Default("30m").Duration()
 		leaderElection   = app.Flag("leader-election", "Use leader election for the conroller manager.").Short('l').Default("false").OverrideDefaultFromEnvar("LEADER_ELECTION").Bool()
 		maxReconcileRate = app.Flag("max-reconcile-rate", "The global maximum rate per second at which resources may checked for drift from the desired state.").Default("10").Int()
+
+		enableManagementPolicies = app.Flag("enable-management-policies", "Enable support for Management Policies.").Default("false").Envar("ENABLE_MANAGEMENT_POLICIES").Bool()
 	)
 
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 
-	zl := zap.New(zap.UseDevMode(*debug))
+	zl := zap.New(zap.UseDevMode(*debug), UseISO8601())
 	log := logging.NewLogrLogger(zl.WithName("provider-newrelic"))
 	if *debug {
 		// The controller-runtime runs with a no-op logger by default. It is
@@ -62,7 +66,9 @@ func main() {
 	kingpin.FatalIfError(err, "Cannot get API server rest config")
 
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
-		SyncPeriod: syncInterval,
+		Cache: cache.Options{
+			SyncPeriod: syncInterval,
+		},
 
 		// controller-runtime uses both ConfigMaps and Leases for leader
 		// election by default. Leases expire after 15 seconds, with a
@@ -88,7 +94,19 @@ func main() {
 		Features:                &feature.Flags{},
 	}
 
+	if *enableManagementPolicies {
+		o.Features.Enable(features.EnableAlphaManagementPolicies)
+		log.Info("Alpha feature enabled", "flag", features.EnableAlphaManagementPolicies)
+	}
+
 	kingpin.FatalIfError(controller.Setup(mgr, o), "Cannot setup NewRelic controllers")
 	kingpin.FatalIfError(mgr.Start(ctrl.SetupSignalHandler()), "Cannot start controller manager")
 
+}
+
+// UseISO8601 sets the logger to use ISO8601 timestamp format
+func UseISO8601() zap.Opts {
+	return func(o *zap.Options) {
+		o.TimeEncoder = zapcore.ISO8601TimeEncoder
+	}
 }

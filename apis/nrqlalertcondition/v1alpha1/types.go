@@ -17,9 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // https://rpm.newrelic.com/api/explore/alerts_nrql_conditions/list
@@ -136,18 +135,6 @@ type NrqlAlertCondition struct {
 
 	Spec   NrqlAlertConditionSpec   `json:"spec"`
 	Status NrqlAlertConditionStatus `json:"status,omitempty"`
-}
-
-// SetPublishConnectionDetailsTo is a func for connection details
-func (in *NrqlAlertCondition) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
-	// TODO implement me
-	panic("implement me")
-}
-
-// GetPublishConnectionDetailsTo is a func for connection details
-func (in *NrqlAlertCondition) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
-	// TODO implement me
-	panic("implement me")
 }
 
 // +kubebuilder:object:root=true
