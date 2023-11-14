@@ -24,6 +24,13 @@ import (
 	"strconv"
 	"strings"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/pkg/connection"
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
+	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/newrelic/newrelic-client-go/v2/newrelic"
@@ -33,14 +40,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/connection"
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/nrqlalertcondition/v1alpha1"
 	apisv1alpha1 "github.com/crossplane-contrib/provider-newrelic/apis/v1alpha1"
@@ -267,7 +266,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	return err
 }
 
-func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.NrqlAlertCondition, response *alerts.NrqlAlertCondition) { // nolint:gocyclo
+func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.NrqlAlertCondition, response *alerts.NrqlAlertCondition) { //nolint:gocyclo
 	// Set the ID, if not set
 	ext := meta.GetExternalName(cr)
 	if cr.Spec.ForProvider.ID == "" || ext == "" || ext != cr.Spec.ForProvider.Name {
@@ -491,7 +490,7 @@ func GenerateNrqlConditionUpdateInput(input alerts.NrqlConditionCreateInput) (al
 }
 
 // IsUpToDate performs comparison
-func IsUpToDate(p *v1alpha1.NrqlAlertCondition, cd *alerts.NrqlAlertCondition) bool { // nolint: gocyclo
+func IsUpToDate(p *v1alpha1.NrqlAlertCondition, cd *alerts.NrqlAlertCondition) bool { //nolint:gocyclo
 
 	input := GenerateAlertConditionInput(p)
 
@@ -535,7 +534,7 @@ func IsUpToDate(p *v1alpha1.NrqlAlertCondition, cd *alerts.NrqlAlertCondition) b
 }
 
 // expirationsAreEqual compares Expiration
-func expirationsAreEqual(expiration *alerts.AlertsNrqlConditionExpiration, nrExpiration *alerts.AlertsNrqlConditionExpiration) bool { // nolint: gocyclo
+func expirationsAreEqual(expiration *alerts.AlertsNrqlConditionExpiration, nrExpiration *alerts.AlertsNrqlConditionExpiration) bool { //nolint:gocyclo
 
 	if (expiration == nil && nrExpiration != nil) || (expiration != nil && nrExpiration == nil) {
 		return false
@@ -560,7 +559,7 @@ func expirationsAreEqual(expiration *alerts.AlertsNrqlConditionExpiration, nrExp
 }
 
 // signalsAreEqual compares signals
-func signalsAreEqual(signal alerts.AlertsNrqlConditionCreateSignal, nrSignal alerts.AlertsNrqlConditionSignal) bool { // nolint: gocyclo
+func signalsAreEqual(signal alerts.AlertsNrqlConditionCreateSignal, nrSignal alerts.AlertsNrqlConditionSignal) bool { //nolint:gocyclo
 
 	if nrSignal.FillOption == nil {
 		nrSignal.FillOption = &alerts.AlertsFillOptionTypes.NONE

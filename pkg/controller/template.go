@@ -17,9 +17,8 @@ limitations under the License.
 package controller
 
 import (
-	ctrl "sigs.k8s.io/controller-runtime"
-
 	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/crossplane-contrib/provider-newrelic/pkg/controller/alertspolicy"
 	"github.com/crossplane-contrib/provider-newrelic/pkg/controller/config"

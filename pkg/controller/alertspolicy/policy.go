@@ -22,6 +22,13 @@ import (
 	"strconv"
 	"strings"
 
+	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
+	"github.com/crossplane/crossplane-runtime/pkg/connection"
+	"github.com/crossplane/crossplane-runtime/pkg/controller"
+	"github.com/crossplane/crossplane-runtime/pkg/event"
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
+	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
+	"github.com/crossplane/crossplane-runtime/pkg/resource"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/newrelic/newrelic-client-go/v2/newrelic"
@@ -30,14 +37,6 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	xpv1 "github.com/crossplane/crossplane-runtime/apis/common/v1"
-	"github.com/crossplane/crossplane-runtime/pkg/connection"
-	"github.com/crossplane/crossplane-runtime/pkg/controller"
-	"github.com/crossplane/crossplane-runtime/pkg/event"
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
-	"github.com/crossplane/crossplane-runtime/pkg/reconciler/managed"
-	"github.com/crossplane/crossplane-runtime/pkg/resource"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/alertspolicy/v1alpha1"
 	apisv1alpha1 "github.com/crossplane-contrib/provider-newrelic/apis/v1alpha1"
@@ -274,7 +273,7 @@ func (c *external) Delete(ctx context.Context, mg resource.Managed) error {
 	return err
 }
 
-func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.AlertsPolicy, response *alerts.AlertsPolicy) { // nolint:gocyclo
+func (c *external) SetExternalNameIfNotSet(ctx context.Context, cr *v1alpha1.AlertsPolicy, response *alerts.AlertsPolicy) { //nolint:gocyclo
 	// Set the ID, if not set
 	ext := meta.GetExternalName(cr)
 	if cr.Spec.ForProvider.ID == "" || ext == "" || ext != cr.Spec.ForProvider.Name {

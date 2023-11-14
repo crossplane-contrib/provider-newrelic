@@ -19,11 +19,10 @@ package nrqlalertcondition
 import (
 	"testing"
 
+	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	"github.com/google/go-cmp/cmp"
 	"github.com/newrelic/newrelic-client-go/v2/pkg/alerts"
 	"go.openly.dev/pointy"
-
-	"github.com/crossplane/crossplane-runtime/pkg/meta"
 
 	"github.com/crossplane-contrib/provider-newrelic/apis/nrqlalertcondition/v1alpha1"
 )
