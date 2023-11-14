@@ -32,8 +32,11 @@ import (
 func (mg *NrqlAlertCondition) ResolveReferences(ctx context.Context, c client.Reader) error {
 	r := reference.NewAPIResolver(c, mg)
 
+	var rsp reference.ResolutionResponse
+	var err error
+
 	// Resolve spec.forProvider.AlertNrqlCondition
-	rsp, err := r.Resolve(ctx, reference.ResolutionRequest{
+	rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 		CurrentValue: mg.Spec.ForProvider.AlertsPolicyID,
 		Reference:    mg.Spec.ForProvider.AlertsPolicyRef,
 		Selector:     mg.Spec.ForProvider.AlertsPolicySelector,

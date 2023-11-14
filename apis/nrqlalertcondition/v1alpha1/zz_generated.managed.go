@@ -29,17 +29,19 @@ func (mg *NrqlAlertCondition) GetDeletionPolicy() xpv1.DeletionPolicy {
 	return mg.Spec.DeletionPolicy
 }
 
+// GetManagementPolicies of this NrqlAlertCondition.
+func (mg *NrqlAlertCondition) GetManagementPolicies() xpv1.ManagementPolicies {
+	return mg.Spec.ManagementPolicies
+}
+
 // GetProviderConfigReference of this NrqlAlertCondition.
 func (mg *NrqlAlertCondition) GetProviderConfigReference() *xpv1.Reference {
 	return mg.Spec.ProviderConfigReference
 }
 
-/*
-GetProviderReference of this NrqlAlertCondition.
-Deprecated: Use GetProviderConfigReference.
-*/
-func (mg *NrqlAlertCondition) GetProviderReference() *xpv1.Reference {
-	return mg.Spec.ProviderReference
+// GetPublishConnectionDetailsTo of this NrqlAlertCondition.
+func (mg *NrqlAlertCondition) GetPublishConnectionDetailsTo() *xpv1.PublishConnectionDetailsTo {
+	return mg.Spec.PublishConnectionDetailsTo
 }
 
 // GetWriteConnectionSecretToReference of this NrqlAlertCondition.
@@ -57,17 +59,19 @@ func (mg *NrqlAlertCondition) SetDeletionPolicy(r xpv1.DeletionPolicy) {
 	mg.Spec.DeletionPolicy = r
 }
 
+// SetManagementPolicies of this NrqlAlertCondition.
+func (mg *NrqlAlertCondition) SetManagementPolicies(r xpv1.ManagementPolicies) {
+	mg.Spec.ManagementPolicies = r
+}
+
 // SetProviderConfigReference of this NrqlAlertCondition.
 func (mg *NrqlAlertCondition) SetProviderConfigReference(r *xpv1.Reference) {
 	mg.Spec.ProviderConfigReference = r
 }
 
-/*
-SetProviderReference of this NrqlAlertCondition.
-Deprecated: Use SetProviderConfigReference.
-*/
-func (mg *NrqlAlertCondition) SetProviderReference(r *xpv1.Reference) {
-	mg.Spec.ProviderReference = r
+// SetPublishConnectionDetailsTo of this NrqlAlertCondition.
+func (mg *NrqlAlertCondition) SetPublishConnectionDetailsTo(r *xpv1.PublishConnectionDetailsTo) {
+	mg.Spec.PublishConnectionDetailsTo = r
 }
 
 // SetWriteConnectionSecretToReference of this NrqlAlertCondition.

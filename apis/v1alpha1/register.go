@@ -58,7 +58,16 @@ var (
 	ProviderConfigUsageListGroupVersionKind = SchemeGroupVersion.WithKind(ProviderConfigUsageListKind)
 )
 
+// StoreConfig type metadata.
+var (
+	StoreConfigKind             = reflect.TypeOf(StoreConfig{}).Name()
+	StoreConfigGroupKind        = schema.GroupKind{Group: Group, Kind: StoreConfigKind}.String()
+	StoreConfigKindAPIVersion   = StoreConfigKind + "." + SchemeGroupVersion.String()
+	StoreConfigGroupVersionKind = SchemeGroupVersion.WithKind(StoreConfigKind)
+)
+
 func init() {
 	SchemeBuilder.Register(&ProviderConfig{}, &ProviderConfigList{})
 	SchemeBuilder.Register(&ProviderConfigUsage{}, &ProviderConfigUsageList{})
+	SchemeBuilder.Register(&StoreConfig{}, &StoreConfigList{})
 }

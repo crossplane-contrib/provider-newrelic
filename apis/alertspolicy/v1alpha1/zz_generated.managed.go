@@ -29,17 +29,14 @@ func (mg *AlertsPolicy) GetDeletionPolicy() xpv1.DeletionPolicy {
 	return mg.Spec.DeletionPolicy
 }
 
+// GetManagementPolicies of this AlertsPolicy.
+func (mg *AlertsPolicy) GetManagementPolicies() xpv1.ManagementPolicies {
+	return mg.Spec.ManagementPolicies
+}
+
 // GetProviderConfigReference of this AlertsPolicy.
 func (mg *AlertsPolicy) GetProviderConfigReference() *xpv1.Reference {
 	return mg.Spec.ProviderConfigReference
-}
-
-/*
-GetProviderReference of this AlertsPolicy.
-Deprecated: Use GetProviderConfigReference.
-*/
-func (mg *AlertsPolicy) GetProviderReference() *xpv1.Reference {
-	return mg.Spec.ProviderReference
 }
 
 // GetWriteConnectionSecretToReference of this AlertsPolicy.
@@ -57,17 +54,14 @@ func (mg *AlertsPolicy) SetDeletionPolicy(r xpv1.DeletionPolicy) {
 	mg.Spec.DeletionPolicy = r
 }
 
+// SetManagementPolicies of this AlertsPolicy.
+func (mg *AlertsPolicy) SetManagementPolicies(r xpv1.ManagementPolicies) {
+	mg.Spec.ManagementPolicies = r
+}
+
 // SetProviderConfigReference of this AlertsPolicy.
 func (mg *AlertsPolicy) SetProviderConfigReference(r *xpv1.Reference) {
 	mg.Spec.ProviderConfigReference = r
-}
-
-/*
-SetProviderReference of this AlertsPolicy.
-Deprecated: Use SetProviderConfigReference.
-*/
-func (mg *AlertsPolicy) SetProviderReference(r *xpv1.Reference) {
-	mg.Spec.ProviderReference = r
 }
 
 // SetWriteConnectionSecretToReference of this AlertsPolicy.
