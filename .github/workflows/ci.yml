@@ -310,21 +310,21 @@ jobs:
           username: ${{ secrets.XPKG_ACCESS_ID }}
           password: ${{ secrets.XPKG_TOKEN }}
 
-      - name: Publish Artifacts to S3, Marketplace, DockerHub
-        run: make -j2 publish BRANCH_NAME=${GITHUB_REF##*/}
-        if: env.AWS_USR != '' && env.CONTRIB_DOCKER_USR != ''
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_USR }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_PSW }}
-          AWS_DEFAULT_REGION: us-east-1
-          GIT_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Promote Artifacts in S3, DockerHub
-        if: github.ref == 'refs/heads/master' && env.AWS_USR != '' && env.CONTRIB_DOCKER_USR != ''
-        run: make -j2 promote
-        env:
-          BRANCH_NAME: master
-          CHANNEL: master
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_USR }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_PSW }}
-          AWS_DEFAULT_REGION: us-east-1
+#      - name: Publish Artifacts to S3, Marketplace, DockerHub
+#        run: make -j2 publish BRANCH_NAME=${GITHUB_REF##*/}
+#        if: env.AWS_USR != '' && env.CONTRIB_DOCKER_USR != ''
+#        env:
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_USR }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_PSW }}
+#          AWS_DEFAULT_REGION: us-east-1
+#          GIT_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Promote Artifacts in S3, DockerHub
+#        if: github.ref == 'refs/heads/master' && env.AWS_USR != '' && env.CONTRIB_DOCKER_USR != ''
+#        run: make -j2 promote
+#        env:
+#          BRANCH_NAME: master
+#          CHANNEL: master
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_USR }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_PSW }}
+#          AWS_DEFAULT_REGION: us-east-1
