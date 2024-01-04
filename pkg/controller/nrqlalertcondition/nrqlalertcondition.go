@@ -51,7 +51,6 @@ const (
 	errNotChannel   = "managed resource is not a Channel custom resource"
 	errTrackPCUsage = "cannot track ProviderConfig usage"
 	errGetPC        = "cannot get ProviderConfig"
-	errGetCreds     = "cannot get credentials"
 	errGetAccountID = "cannot get accountID from ProviderConfig"
 )
 
@@ -121,22 +120,16 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 		return nil, errors.Wrap(err, errGetPC)
 	}
 
-	cd := pc.Spec.Credentials
-	data, err := resource.CommonCredentialExtractor(ctx, cd.Source, c.kube, cd.CommonCredentialSelectors)
-	if err != nil {
-		return nil, errors.Wrap(err, errGetCreds)
-	}
-
-	// Create a client using "NEW_RELIC_API_KEY"
-	nrClient, err := nr.GetNewRelicClient(strings.TrimSpace(string(data)))
+	// Get the account id from the provider config
+	accountID, err := nr.ExtractNewRelicAccountID(pc)
 	if err != nil {
 		return nil, err
 	}
 
-	account := pc.Spec.AccountID
-	accountID, err := strconv.Atoi(account)
-	if account == "" || err != nil {
-		return nil, errors.Wrap(err, errGetAccountID)
+	// Create a client using NR Credentials
+	nrClient, err := nr.ExtractNewRelicCredentials(ctx, c.kube, pc)
+	if err != nil {
+		return nil, err
 	}
 
 	return &external{client: nrClient, kube: c.kube, accountID: accountID}, nil

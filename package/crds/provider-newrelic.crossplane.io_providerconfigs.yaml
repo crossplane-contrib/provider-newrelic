@@ -98,6 +98,12 @@ spec:
                 required:
                 - source
                 type: object
+              region:
+                description: Region of the account
+                enum:
+                - US
+                - EU
+                type: string
             required:
             - credentials
             type: object

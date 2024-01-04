@@ -11,7 +11,9 @@ This provider supports the following:
 - `NrqlAlertCondition` - https://docs.newrelic.com/docs/alerts-applied-intelligence/new-relic-alerts/alert-conditions/create-nrql-alert-conditions/
 - `Dashboard` - https://docs.newrelic.com/docs/query-your-data/explore-query-data/dashboards/introduction-dashboards/
 
-- `ProviderConfig` type that only points to a credentials `Secret`.
+- `ProviderConfig` type which points to a credentials `Secret`.
+  - `account_id` is required
+  - `region` is optional and supports `US` or `EU`
 ```---
 apiVersion: provider-newrelic.crossplane.io/v1alpha1
 kind: ProviderConfig
@@ -19,6 +21,7 @@ metadata:
   name: newrelic-provider
 spec:
   account_id: "your_nr_account_id"
+  region: "US | EU" # Optional
   credentials:
     source: Secret
     secretRef:

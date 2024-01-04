@@ -48,8 +48,6 @@ const (
 	errNotPolicy    = "managed resource is not a Policy custom resource"
 	errTrackPCUsage = "cannot track ProviderConfig usage"
 	errGetPC        = "cannot get ProviderConfig"
-	errGetCreds     = "cannot get credentials"
-	errGetAccountID = "cannot get accountId from ProviderConfig"
 )
 
 // Setup adds a controller that reconciles AlertsPolicy.
@@ -118,20 +116,14 @@ func (c *connector) Connect(ctx context.Context, mg resource.Managed) (managed.E
 		return nil, errors.Wrap(err, errGetPC)
 	}
 
-	cd := pc.Spec.Credentials
-	data, err := resource.CommonCredentialExtractor(ctx, cd.Source, c.kube, cd.CommonCredentialSelectors)
+	// Get the account id from the provider config
+	accountID, err := nr.ExtractNewRelicAccountID(pc)
 	if err != nil {
-		return nil, errors.Wrap(err, errGetCreds)
+		return nil, err
 	}
 
-	account := pc.Spec.AccountID
-	accountID, err := strconv.Atoi(account)
-	if account == "" || err != nil {
-		return nil, errors.Wrap(err, errGetAccountID)
-	}
-
-	// Create a client using "NEW_RELIC_API_KEY"
-	nrClient, err := nr.GetNewRelicClient(strings.TrimSpace(string(data)))
+	// Create a client using NR Credentials
+	nrClient, err := nr.ExtractNewRelicCredentials(ctx, c.kube, pc)
 	if err != nil {
 		return nil, err
 	}
