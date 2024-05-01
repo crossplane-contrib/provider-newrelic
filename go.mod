@@ -7,7 +7,7 @@ require (
 	github.com/crossplane/crossplane-runtime v1.14.4
 	github.com/crossplane/crossplane-tools v0.0.0-20230925130601-628280f8bf79
 	github.com/google/go-cmp v0.6.0
-	github.com/newrelic/newrelic-client-go/v2 v2.24.0
+	github.com/newrelic/newrelic-client-go/v2 v2.33.0
 	github.com/pkg/errors v0.9.1
 	go.openly.dev/pointy v1.3.0
 	go.uber.org/zap v1.26.0
