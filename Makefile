@@ -7,7 +7,7 @@ PROJECT_REPO := github.com/crossplane-contrib/$(PROJECT_NAME)
 PLATFORMS ?= linux_amd64 linux_arm64
 
 # kind-related versions
-KIND_VERSION ?= v0.11.1
+KIND_VERSION ?= v0.22.0
 KIND_NODE_IMAGE_TAG ?= v1.19.11
 # -include will silently skip missing files, which allows us
 # to load those files with a target in the Makefile. If only
@@ -42,9 +42,9 @@ GOLANGCILINT_VERSION = 1.54.2
 # ====================================================================================
 # Setup Kubernetes tools
 
-UP_VERSION = v0.18.0
+UP_VERSION = v0.28.0
 UP_CHANNEL = stable
-UPTEST_VERSION = v0.5.0
+UPTEST_VERSION = v0.11.1
 
 -include build/makelib/k8s_tools.mk
 
