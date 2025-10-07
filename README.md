@@ -1,4 +1,13 @@
-# provider-newrelic
+# provider-newrelic (archived)
+
+> [!WARNING]
+> This project has been archived as per [Crossplane's project
+> governance](https://github.com/crossplane/crossplane/blob/main/GOVERNANCE.md#archival-policy)
+> for community extension projects and is no longer actively maintained.
+>
+> It is recommended to use the
+> [crossplane-provider-newrelic](https://github.com/crossplane-contrib/crossplane-provider-newrelic)
+> project instead.
 
 `provider-newrelic` is a [Crossplane](https://crossplane.io/) Provider
 that is meant to be used for infrastructure-as-code for New Relic.
@@ -43,7 +52,7 @@ type: Opaque
 ```
 
 ## Additional Note
-Sometimes an `AlertsPolicy` may be deleted, or regenerated, giving it a new ID.  
+Sometimes an `AlertsPolicy` may be deleted, or regenerated, giving it a new ID.
 This can cause issues for any `NrqlAlertCondition` with a reference to that object resulting in errors such as `"error": "Policy with ID 1234567 not found"`
 To fix you can simply remove the `policyId` on the `NrqlAlertCondition` to to cause the reference to re-resolve.
 (There is no harm in doing this, it will just cause the provider to lookup the new ID.)
